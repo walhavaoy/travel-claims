@@ -1,0 +1,19 @@
+apiVersion: tmpclaw.io/v1alpha1
+kind: ClawPlugin
+metadata:
+  name: claims-manager
+  namespace: {{ .Release.Namespace }}
+spec:
+  label: Claims Manager
+  order: 35
+  mode: tab
+  service: claims-manager
+  port: 8080
+  bundlePath: /ui/claims-manager.js
+  manifestPath: /ui/manifest.json
+  apiProxy:
+    prefix: /api/claims-mgr
+    targetService: taskmaster
+    targetPort: 8080
+    stripPrefix: /api/claims-mgr
+    addPrefix: /api

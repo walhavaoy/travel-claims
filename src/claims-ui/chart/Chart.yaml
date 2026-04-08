@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tmpclaw-claims-ui
+description: tmpclaw claims employee dashboard MFE service
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

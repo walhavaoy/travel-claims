@@ -1,0 +1,5 @@
+image:
+  repository: localhost:31500/tmpclaw/claims-manager
+  tag: "0.1.0"
+imagePullPolicy: Always
+replicas: 1
