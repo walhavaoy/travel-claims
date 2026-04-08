@@ -1,0 +1,1073 @@
+id,task_id,author,body,created_at
+cee48679-b575-4a85-ae5c-37a180a864c2,e6853f93-50bf-424b-af3b-b6c59fab62fd,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T00:44:56.642Z
+
+taskmaster:
+  build:  built (12s) -> localhost:31500/tmpclaw/taskmaster:1775436265
+  deploy: deployed
+```",2026-04-06 00:45:28.106457+00
+3f06eb21-72a7-42c1-90c1-e1b49da7464f,15457f73-f228-4e52-be09-b5c42f6dbc06,operator,"[Previous description]
+Seed stub users (Alice/employee, Bob/manager, Carol/finance) with department and manager_id relationships",2026-04-05 22:01:56.385499+00
+c6ef1150-b1f2-4b3b-b97c-402b550460bb,694be92f-2d90-4b06-b85a-bc8f2308a727,operator,"Deploy failed:
+```
+Deploy run: 2026-04-06T01:01:01.350Z
+
+taskmaster:
+  build:  built (216s) -> localhost:31500/tmpclaw/taskmaster:1775436886
+  deploy: deploy failed: Helm deploy failed: Command failed: helm upgrade --install taskmaster /workspace/repo/taskmaster/chart --namespace tmpclaw --reset-values --set image.repository=localhost:31500/tmpclaw/taskmaster --set-string image.tag=1775436886 --set imagePullPolicy=Always --wait --timeout 120s --history-max 10
+Error: UPGRADE FAILED: context deadline exceeded
+
+```",2026-04-06 01:02:48.767509+00
+c8612e8a-43ef-46a6-ae48-70d4af036548,d4e00451-5f43-4e7b-9c21-b1b4f8d9f3c5,operator,"Deploy succeeded:
+```
+No changed components detected — nothing to deploy.
+```",2026-04-06 01:02:51.933527+00
+0d900c53-c771-4a44-970e-c4939e4b580e,7fac6471-5a9c-42f3-994a-168f0a7475f4,operator,"[Previous description]
+## Context
+
+The architecture reviewer for task db0fcd31 noted that `handleClaimReceipts` (POST, ~lines 789-920) and `handleLineItemReceipts` (POST, ~lines 711-786) in `taskmaster/src/index.ts` share ~60 lines of nearly identical upload/validate/store logic.
+
+## Deliverable
+
+Extract a shared `processReceiptUpload(req, claimId, lineItemId, pool, logger)` helper that handles:
+- Header validation (X-File-Name, Content-Type)
+- MIME type and extension checks
+- Body size and emptiness validation
+- File write to RECEIPT_UPLOAD_DIR with UUID-based name
+- DB INSERT into receipts table
+- Response construction (201 with receipt object)
+
+Both `handleClaimReceipts` and `handleLineItemReceipts` should call this shared helper after their own claim/line-item existence checks.
+
+## Acceptance Criteria
+1. Shared helper extracted, both handlers use it
+2. No behavior change — all existing validations and responses preserved
+3. `npm run build` passes
+4. `npm test` passes (if tsx available)",2026-04-06 08:30:05.022422+00
+3121f8e8-4880-44c0-b5e8-f670be083103,7fac6471-5a9c-42f3-994a-168f0a7475f4,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:46:27.585Z
+
+taskmaster:
+  build:  built (12s) -> localhost:31500/tmpclaw/taskmaster:1775465157
+  deploy: deployed
+```",2026-04-06 08:46:47.946988+00
+3d6b615d-9d6e-40b2-93c5-3cebff7aed6b,15457f73-f228-4e52-be09-b5c42f6dbc06,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-05T22:08:19.212Z
+
+taskmaster:
+  build:  built (6s) -> localhost:31500/tmpclaw/taskmaster:1775426874
+  deploy: deployed
+```",2026-04-05 22:08:42.206282+00
+3c062eab-bc05-460f-aed7-135ce9f66c86,ffa24c51-d8bd-48cf-8fcb-1361dfa94c4c,operator,"Deploy succeeded:
+```
+No changed components detected — nothing to deploy.
+```",2026-04-06 01:13:07.482605+00
+edaef77b-9293-4a45-bb1d-0ef8c39287d7,442c4bca-5c3f-4e50-b42f-32cdc3aec723,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T01:25:55.386Z
+
+portal:
+  build:  built (26s) -> localhost:31500/tmpclaw/portal:1775438706
+  deploy: deployed
+```",2026-04-06 01:35:22.083412+00
+0c6bc6c3-6521-4082-9d35-8df667b58037,19a18345-38ca-4eb6-a392-0982a62604ac,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T00:07:48.841Z
+
+assistant:
+  build:  built (8s) -> localhost:31500/tmpclaw/assistant:1775434043
+  deploy: deployed
+```",2026-04-06 00:08:04.289585+00
+f3296ddb-ebf7-4040-9f88-c7c847117d9f,9c29ba56-fbb4-41f7-8bb3-4de282dc09eb,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:47:54.201767+00
+7d9862b8-9156-4125-a44b-6cfc1424a412,8cdfd25f-e087-455b-a58d-44eb898868b3,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:47:54.220894+00
+cfbb2056-4214-4f33-8617-b37b4e40bd63,f0cbff08-b0be-4081-81c1-65c59aedc56e,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:47:54.239124+00
+5130493f-a420-4044-b262-91e89501ce23,bf5424f6-adee-417f-b2a4-2558e9be9fc5,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:47:54.254362+00
+5760ddcd-c660-487b-98b9-1f2e5332ce58,26815bab-48ab-4cb9-a778-eb7eb87e6e2a,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:52:55.768523+00
+76cadc2f-e4a1-4f54-896b-4e2022813aac,dd55c687-780d-4904-aaf7-01c7860abd8a,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T00:29:26.663Z
+
+taskmaster:
+  build:  built (15s) -> localhost:31500/tmpclaw/taskmaster:1775435334
+  deploy: deployed
+```",2026-04-06 00:29:50.395681+00
+dc91272f-c996-4cf8-9dc2-09b278a0acbb,6d056945-fc79-4d8f-920b-e0c23a94d96a,operator,"[Previous description]
+I've confirmed the bug exists on the current `origin/main`. The issue is at `taskmaster/src/index.ts:954-955` — the `reject` branch only sets `rejected_at` but not `approver_id`, unlike the older handler at line 522 which correctly sets both.
+
+## Implementation Plan
+
+### 1. Summary
+
+Add `approver_id` to the `reject` branch of the action-based PATCH handler in `taskmaster/src/index.ts` so the audit trail records which manager rejected the claim, matching the behavior of the older `handleClaimStatus` handler.
+
+### 2. Approach
+
+This is a one-line fix in a single file. The `approve` / `mark_paid` branch (line 951-953) already demonstrates the correct pattern — push `approver_id = $N` into `sets` and `user.id` into `vals`, then increment `idx`. The `reject` branch (line 954-955) needs the identical treatment. A test should be added to prevent regression.
+
+**Consistency audit of all action branches:**
+
+| Action | Sets `approver_id`? | Should it? | Status |
+|---|---|---|---|
+| `submit` | No | No (employee action) | Correct |
+| `review` | No | No (intermediate state, not a decision) | Correct |
+| `approve` | Yes (line 952) | Yes | Correct |
+| `reject` | **No** (line 954-955) | **Yes** | **BUG** |
+| `mark_paid` | Yes (line 952, same branch as approve) | Yes | Correct |
+
+### 3. Files to change
+
+| File | Change | Why |
+|---|---|---|
+| `taskmaster/src/index.ts` | Add `approver_id` to `reject` action branch (lines 954-955) | Fix the bug: record who rejected the claim |
+| `taskmaster/src/api.test.ts` | Add test case for reject action setting `approver_id` | Prevent regression |
+
+### 4. Step-by-step implementation
+
+1. **Read** `taskmaster/src/index.ts` around line 954 to confirm exact current code.
+
+2. **Edit** the `reject` branch at line 954-955. Change:
+   ```typescript
+   } else if (action === ""reject"") {
+     sets.push(`rejected_at = now()`);
+   }
+   ```
+   To:
+   ```typescript
+   } else if (action === ""reject"") {
+     sets.push(`approver_id = $${idx}`); vals.push(user.id); idx++;
+     sets.push(`rejected_at = now()`);
+   }
+   ```
+   This mirrors the pattern used by the `approve`/`mark_paid` branch at lines 951-953.
+
+3. **Add a test** in `taskmaster/src/api.test.ts` that:
+   - Creates a claim (as employee user)
+   - Submits it (action: `submit`)
+   - Moves to `under_review` (action: `review`, as manager)
+   - Rejects it (action: `reject`, as manager)
+   - Asserts the returned claim has `approver_id` set to the manager's user ID
+   - Asserts `rejected_at` is also set (existing behavior)
+
+4. **Run `npm run build`** in `taskmaster/` to verify TypeScript compiles.
+
+5. **Run `npm test`** in `taskmaster/` to verify the new test passes and no existing tests break.
+
+### 5. Edge cases & risks
+
+- **Parameter index (`idx`) correctness**: The `idx` variable is incremented after each pushed param. Adding `approver_id` before `rejected_at` (which uses `now()` and doesn't consume a param slot) is safe. The `updated_at = now()` pushed at line 957 also doesn't consume a slot. The final `WHERE id = $1` uses a pre-existing slot. No off-by-one risk.
+- **No schema change needed**: The `approver_id` column already exists in the `claims` table (confirmed at `db.ts:1124`) and already has an index (`db.ts:1138`).
+- **Backward compatibility**: This is purely additive — a previously-NULL field now gets populated. No API contract change; the field was always in the response, just null on reject.
+- **Old handler consistency**: The older `handleClaimStatus` handler (line 522) already sets `approver_id` on reject. Both handlers will now be consistent.
+
+### 6. Acceptance criteria
+
+1. After a `reject` action via `PATCH /api/claims/:id` with `{ ""action"": ""reject"" }`, the returned claim object has `approver_id` set to the authenticated user's ID (not null).
+2. The `rejected_at` timestamp continues to be set (no regression).
+3. The `approve` and `mark_paid` actions continue to set `approver_id` correctly (no regression).
+4. The older PUT-based `handleClaimStatus` handler remains unchanged and still works.
+5. `npm run build` passes with no TypeScript errors.
+6. `npm test` passes, including the new reject-approver_id test case.",2026-04-06 13:47:15.788316+00
+6b8ff2ae-cc40-4fd1-8956-258d9811aaf5,4b2d0dd2-b530-4e7a-85e1-d3798779ebf9,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T00:30:11.435Z
+
+assistant:
+  build:  built (9s) -> localhost:31500/tmpclaw/assistant:1775435385
+  deploy: deployed
+```",2026-04-06 00:30:45.241021+00
+6233ebcf-62f7-4c30-8d33-30f4ed37659e,c7894170-ab10-4a62-94da-576849c812a5,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:59:18.414501+00
+4a11838e-4146-4507-ad3b-b0f39b5787ba,765e48bb-fb3f-447d-b0a1-f012e662c299,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 01:59:18.431315+00
+7ebed592-705b-4452-8104-c24bf4964737,765e48bb-fb3f-447d-b0a1-f012e662c299,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:30:47.446Z
+
+claims-manager:
+  build:  built (8s) -> localhost:31500/tmpclaw/claims-manager:1775464208
+  deploy: deployed
+```",2026-04-06 08:31:07.50132+00
+64e96d9d-9439-4de3-9bc8-b9092fc32350,a4f9e580-cf01-418f-a396-0ee633fdf7a6,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:49:11.785Z
+
+claims-ui:
+  build:  built (12s) -> localhost:31500/tmpclaw/claims-ui:1775465321
+  deploy: deployed
+```",2026-04-06 08:49:39.846914+00
+a98adc4e-1bf4-4d66-be55-a08535aecbfd,d79c5d21-5dec-4d59-b02a-2527f0ba2557,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:55:35.139Z
+
+operator:
+  build:  built (12s) -> localhost:31500/tmpclaw/operator:1775465683
+  deploy: deployed
+```",2026-04-06 08:55:59.071629+00
+7530dbfc-f89f-4202-9dd5-cd435455934c,21ba6cd2-3d4e-493a-b749-4ce390b41cc5,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T09:30:35.537Z
+
+claims-ui:
+  build:  built (201s) -> localhost:31500/tmpclaw/claims-ui:1775467606
+  deploy: deployed
+```",2026-04-06 09:31:13.656384+00
+f5c6fdb3-6501-4c98-a8bf-ccef7dea3bf8,e2f8611d-6e34-4d7a-a3f0-0c178303ad4b,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-05T21:43:59.102Z
+
+operator-ts:
+  build:  built (8s) -> localhost:31500/tmpclaw/operator-ts:1775425429
+  deploy: skipped (no helm chart with image settings)
+```",2026-04-05 21:44:14.671786+00
+8e3c5bd8-ca3a-4cf5-b368-29add267dfb6,3825e28a-cf87-44e4-a302-247bc0bd0f48,operator,"[Previous description]
+I now have a complete picture of the codebase. Here's the rework plan:
+
+## Rework Plan
+
+### 1. What Was Requested
+
+The architecture review identified **6 critical issues** — all in `taskmaster/src/index.ts`. The branch has zero diff against main; all code must be written from scratch.
+
+| # | Issue | Location | Problem |
+|---|-------|----------|---------|
+| 1 | `handleUsers` has no RBAC | line 340 | Any authenticated user can list all users |
+| 2 | `handleClaimStatus` trusts `actor_id` from body | line 379 | Any user can impersonate another when approving/rejecting |
+| 3 | `handleClaimById` has no role-based filtering | line 628 | Any user can view/edit any claim |
+| 4 | `handleClaimsExportCsv` has no role check | line 1195 | Any user can export all approved claims |
+| 5 | `handleLineItemReceipts` / `handleClaimReceipts` have no role guards | lines 1009, 1046 | Any user can upload/view receipts for any claim |
+| 6 | `handleClaimStatus` missing `FOR UPDATE` | line 399 | Race condition — **already fixed on main** (line 400 already has `FOR UPDATE`; the reviewer's note #19 was based on stale info) |
+
+### 2. What to Fix
+
+**File: `taskmaster/src/index.ts`** (single file, all changes)
+
+#### 2a. Create a shared `resolveUser` helper
+
+Extract the user-lookup + role-resolution pattern already used in `handleClaims` (lines 470-478) into a reusable helper. This avoids duplicating the `SELECT id, role FROM users WHERE username = $1` query in every handler.
+
+```ts
+interface ResolvedUser { id: string; role: string; }
+
+async function resolveUser(auth: TokenClaims, res: ServerResponse): Promise<ResolvedUser | null> {
+  const { rows } = await pool.query(
+    `SELECT id, role FROM users WHERE username = $1 LIMIT 1`,
+    [auth.sub]
+  );
+  if (!rows.length) {
+    json(res, { error: ""Authenticated user not found in users table"" }, 403);
+    return null;
+  }
+  return { id: rows[0].id as string, role: rows[0].role as string };
+}
+```
+
+#### 2b. Create a `requireRole` guard
+
+```ts
+function requireRole(res: ServerResponse, userRole: string, allowed: string[]): boolean {
+  if (!allowed.includes(userRole)) {
+    json(res, { error: ""Forbidden — insufficient role"", required: allowed }, 403);
+    return false;
+  }
+  return true;
+}
+```
+
+#### 2c. Thread `auth: TokenClaims` into all claim-related handlers
+
+Currently only `handleClaims` receives `auth`. The router (lines 5005-5031) must pass `claims!` to every handler that needs RBAC.
+
+### 3. Step-by-Step Rework
+
+**Step 1: Add `resolveUser` and `requireRole` helpers**
+
+Add both helper functions near the top of the claim routes section (after line ~346, before `handleClaimStatus`). These are the building blocks for all subsequent steps.
+
+**Step 2: Fix `handleUsers` — restrict to manager/finance/admin**
+
+- Change signature to `handleUsers(req, res, auth: TokenClaims)`
+- Call `resolveUser(auth, res)` to get the role
+- Call `requireRole(res, role, [""manager"", ""finance"", ""admin""])` — employees should not see the full user list
+- Update the router call at line 5005 to pass `claims!`
+
+**Step 3: Fix `handleClaimStatus` — derive actor from auth, add role checks**
+
+- Change signature to `handleClaimStatus(req, res, claimId, auth: TokenClaims)`
+- Call `resolveUser(auth, res)` to get `{ id, role }`
+- **Remove `actor_id` from `CLAIM_STATUS_SCHEMA`** (make it optional or remove the `required: true`) and **ignore `body.actor_id`** — always use the resolved user's `id` as the actor
+- Add role-based permission checks on the transition:
+  - `submit`: only the claim's `submitter_id` (must match resolved user id) or admin
+  - `approved` / `rejected` / `under_review`: only `manager`, `finance`, or `admin`
+  - `paid`: only `finance` or `admin`
+  - `draft` (return from rejected): only the claim's `submitter_id` or admin
+- Replace all `body.actor_id` usages (lines 432, 436, 453) with the resolved user `id`
+- Update the router call at line 5009 to pass `claims!`
+
+**Step 4: Fix `handleClaimById` — add role-based visibility and ownership checks**
+
+- Change signature to `handleClaimById(req, res, id, auth: TokenClaims)`
+- Call `resolveUser(auth, res)` to get `{ id: userId, role }`
+- **GET**: Apply the same role-based visibility as `handleClaims`:
+  - `employee`: can only view claims where `submitter_id = userId`
+  - `manager`: can view claims from direct reports (`submitter_id IN (SELECT id FROM users WHERE manager_id = userId)`)
+  - `finance`/`admin`: can view any claim
+- **PUT** (edit draft): Verify `existing[0].submitter_id === userId` (only the owner edits their draft) or role is `admin`
+- **PATCH** (action-based transitions): Same role logic as Step 3. Replace `body.actor_id` (line 794) with resolved user `id`. Apply role-permission checks per action.
+- Update the router call at line 5013-5014 to pass `claims!`
+
+**Step 5: Fix `handleClaimsExportCsv` — restrict to finance/admin**
+
+- Change signature to `handleClaimsExportCsv(req, res, auth: TokenClaims)`
+- Call `resolveUser(auth, res)` to get the role
+- Call `requireRole(res, role, [""finance"", ""admin""])` — reject if not finance/admin
+- Update the router call at line 5011 to pass `claims!`
+
+**Step 6: Fix `handleClaimReceipts` and `handleLineItemReceipts` — add ownership/role guards**
+
+For `handleClaimReceipts` (line 1046):
+- Change signature to `handleClaimReceipts(req, res, claimId, auth: TokenClaims)`
+- Call `resolveUser(auth, res)` to get `{ id: userId, role }`
+- After fetching the claim (line 1057-1063), check ownership:
+  - Fetch `submitter_id` from the claim
+  - `employee`: only if `submitter_id === userId`
+  - `manager`: only if the submitter is a direct report
+  - `finance`/`admin`: always allowed
+- Update the router call at line 5017-5018 to pass `claims!`
+
+For `handleLineItemReceipts` (line 1009):
+- Change signature to `handleLineItemReceipts(req, res, lineItemId, auth: TokenClaims)`
+- After fetching the line item, join to `claims` to get `submitter_id` and apply the same ownership check
+- Update the router call at line 5030-5031 to pass `claims!`
+
+**Step 7: Refactor `handleClaims` to use the new helpers**
+
+Replace the inline user-lookup at lines 470-478 with a call to `resolveUser(auth, res)`. This keeps the codebase DRY and consistent.
+
+**Step 8: Update the router to pass `claims!` to all modified handlers**
+
+In the router section (lines 5005-5031), update each `handle()` call:
+
+```
+// line 5005
+handleUsers(req, res)  →  handleUsers(req, res, claims!)
+
+// line 5009
+handleClaimStatus(req, res, m![1])  →  handleClaimStatus(req, res, m![1], claims!)
+
+// line 5011
+handleClaimsExportCsv(req, res)  →  handleClaimsExportCsv(req, res, claims!)
+
+// line 5014
+handleClaimById(req, res, m![1])  →  handleClaimById(req, res, m![1], claims!)
+
+// line 5018
+handleClaimReceipts(req, res, m![1])  →  handleClaimReceipts(req, res, m![1], claims!)
+
+// line 5031
+handleLineItemReceipts(req, res, m![1])  →  handleLineItemReceipts(req, res, m![1], claims!)
+```
+
+### 4. Verification
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| TypeScript compiles | `cd taskmaster && npm run build` | No errors |
+| Tests pass | `cd taskmaster && npm test` | All pass |
+| `handleUsers` rejects employee | Manually verify code: employee role → 403 | ✓ |
+| `handleClaimStatus` ignores body `actor_id` | Grep for `body.actor_id` — should be zero usages remaining in `handleClaimStatus` | ✓ |
+| `handleClaimById` GET filters by role | Code review: employee sees only own, manager sees reports, finance/admin sees all | ✓ |
+| `handleClaimsExportCsv` rejects non-finance | Code review: `requireRole(..., [""finance"", ""admin""])` at top of function | ✓ |
+| Receipt endpoints check ownership | Code review: both handlers join to claims and check `submitter_id` against resolved user | ✓ |
+| `resolveUser` used everywhere | `grep -c ""resolveUser"" taskmaster/src/index.ts` — should be 7 (one per handler + refactored `handleClaims`) | ✓ |
+| No `body.actor_id` for identity | `grep ""body.actor_id""` in claim handlers — only in PATCH `handleClaimById` if retained as optional comment metadata, never for identity | ✓ |
+| `FOR UPDATE` present | Already on main at line 400 — confirm it's still there after edits | ✓ |
+
+**Note on issue #6 (FOR UPDATE):** The reviewer flagged line 399 as missing `FOR UPDATE`, but the current main code at line 400 already reads `SELECT * FROM claims WHERE id = $1 FOR UPDATE`. The PATCH path in `handleClaimById` (line 800) also already uses `FOR UPDATE`. No fix needed here — just confirm preservation during edits.",2026-04-06 10:58:13.176979+00
+b893f6e6-cb54-4f47-841a-c407a89026dd,be0593fb-4442-4bfd-be8d-e7b5339ced69,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-05T21:48:22.362Z
+
+operator-ts:
+  build:  built (6s) -> localhost:31500/tmpclaw/operator-ts:1775425694
+  deploy: skipped (no helm chart with image settings)
+```",2026-04-05 21:48:41.324154+00
+751eee86-444d-4d70-9343-8d996b901796,dfc431bc-769f-49e3-83e2-323171a40f5b,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T05:54:19.359Z
+
+assistant:
+  build:  built (22s) -> localhost:31500/tmpclaw/assistant:1775454774
+  deploy: deployed
+taskmaster:
+  build:  built (18s) -> localhost:31500/tmpclaw/taskmaster:1775454774
+  deploy: deployed
+```",2026-04-06 05:59:21.61518+00
+248736e7-f753-4a89-b481-8695256d4271,d7d84142-d016-422d-8e9c-a37c42d86917,janitor,[janitor] Task was stuck in 'developing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 07:52:33.219125+00
+eb4296d8-5de8-4662-815d-e1fe07a19d6d,db0fcd31-f8ed-4720-aa6c-98a498cbbd0c,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 06:15:22.242194+00
+008a1a67-d942-41f2-8bc8-f646e16d0b83,db0fcd31-f8ed-4720-aa6c-98a498cbbd0c,janitor,[janitor] Task was stuck in 'reviewing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 08:03:28.207522+00
+9a0cd170-50d1-4661-93b7-36ac2bcbc8e3,d7d84142-d016-422d-8e9c-a37c42d86917,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:37:18.079Z
+
+taskmaster:
+  build:  built (15s) -> localhost:31500/tmpclaw/taskmaster:1775464605
+  deploy: deployed
+```",2026-04-06 08:38:06.371139+00
+22d64559-2a74-447a-9357-24042e4b5bd0,9c29ba56-fbb4-41f7-8bb3-4de282dc09eb,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:06:29.110Z
+
+portal:
+  build:  built (12s) -> localhost:31500/tmpclaw/portal:1775462759
+  deploy: deployed
+```",2026-04-06 08:06:50.736007+00
+2717d50a-ff22-40ac-ab19-acea99a483f5,2393c86c-bb6a-42e5-a3b2-74bd7ce34ac6,operator,"[Previous description]
+The issue is confirmed present on main. The `pool.query` at line 665 runs outside the transaction that starts at line 701. Now I have the full picture to write the plan.
+
+## Implementation Plan
+
+### 1. Summary
+
+Move the claim-existence-and-status check in the PUT `/api/claims/:id` handler from outside the transaction (using `pool.query`) to inside the transaction (using `client.query` with `FOR UPDATE`), eliminating a TOCTOU race where two concurrent PUT requests can both pass the draft-status guard before either begins its transaction.
+
+### 2. Approach
+
+Apply the exact same pattern already established at lines 396–408 (`handleClaimStatus`) and lines 826–840 (`handleClaimById` PATCH handler):
+
+- Move the SELECT + status check to after `BEGIN`
+- Switch from `pool.query` to `client.query`
+- Add `FOR UPDATE` to lock the row for the duration of the transaction
+
+This is a minimal, surgical change to one code block within one file.
+
+### 3. Files to Change
+
+| File | Action | Reason |
+|------|--------|--------|
+| `taskmaster/src/index.ts` | Modify | Move lines 665–671 into the transaction block (after line 701) and add `FOR UPDATE` |
+
+### 4. Step-by-Step Implementation
+
+1. **Read the current PUT handler** in `handleClaimById` (starting at line 656) to confirm the exact line numbers and surrounding context.
+
+2. **Remove lines 664–671** — the out-of-transaction SELECT and status check:
+   ```
+   // Fetch existing claim — must be draft
+   const { rows: existing } = await pool.query(
+     `SELECT * FROM claims WHERE id = $1`, [id]
+   );
+   if (!existing.length) { json(res, { error: ""Claim not found"" }, 404); return; }
+   if (existing[0].status !== ""draft"") {
+     json(res, { error: ""Only draft claims can be edited"" }, 409); return;
+   }
+   ```
+
+3. **Insert the check inside the transaction**, immediately after `await client.query(""BEGIN"")` at line 701 (adjusted after deletion). The new code:
+   ```typescript
+   // Fetch existing claim with row lock — must be draft
+   const { rows: existing } = await client.query(
+     `SELECT * FROM claims WHERE id = $1 FOR UPDATE`, [id]
+   );
+   if (!existing.length) {
+     await client.query(""ROLLBACK"");
+     json(res, { error: ""Claim not found"" }, 404);
+     return;
+   }
+   if (existing[0].status !== ""draft"") {
+     await client.query(""ROLLBACK"");
+     json(res, { error: ""Only draft claims can be edited"" }, 409);
+     return;
+   }
+   ```
+
+4. **Verify `existing[0]` usage**: The variable `existing[0].submitter_id` is used at line 761 (inside the transaction, for the history INSERT). After the move, `existing` is still declared in the same function scope and is now populated inside the transaction — no other changes needed.
+
+5. **Verify ROLLBACK paths**: Both early-return guards (`not found` and `not draft`) must call `await client.query(""ROLLBACK"")` and then `client.release()` (either explicitly or via the existing `finally` block at the end of the `try`). Confirm the existing `finally { client.release(); }` block covers these paths — it does, since the returns happen inside the `try` block.
+
+6. **Build**: Run `cd taskmaster && npm run build` to verify no type errors.
+
+7. **Test**: Run `cd taskmaster && npm test` to verify all tests pass.
+
+### 5. Edge Cases & Risks
+
+| Risk | Mitigation |
+|------|-----------|
+| **`existing` variable scope** | `existing` is declared with `const` inside the function body. Moving it after `BEGIN` keeps it in the same `try` block scope — still accessible at line 761 where `existing[0].submitter_id` is used. |
+| **`client.release()` on early return** | The existing `finally { client.release(); }` block (line ~770) covers all early returns inside the `try`. No leak. |
+| **Validation before transaction** | Body parsing (line 657) and schema validation (line 661) remain outside the transaction — this is correct. Only the DB-state check needs to be inside. Line item validation (lines 674–697) also remains outside, which is fine since it's pure input validation with no DB reads. |
+| **Performance** | `FOR UPDATE` acquires a row lock for the transaction duration. This is the same approach used in the PATCH handler and `handleClaimStatus`. Impact is negligible — locks are held only for the short duration of the update. |
+| **No new dependencies** | This change only reorders existing code and adds `FOR UPDATE`. No new imports, no schema changes, no API contract changes. |
+
+### 6. Acceptance Criteria
+
+1. **The SELECT on `claims` runs inside the transaction**: `client.query` (not `pool.query`) is used, and the query appears after `BEGIN`.
+2. **`FOR UPDATE` is present**: The SELECT query includes `FOR UPDATE` to lock the row.
+3. **ROLLBACK on early return**: Both the ""not found"" and ""not draft"" guard clauses call `ROLLBACK` before returning (matching the pattern at lines 400–414 and 830–840).
+4. **`existing[0].submitter_id` still accessible**: The history INSERT at ~line 761 still compiles and references the correct variable.
+5. **Build passes**: `npm run build` in `taskmaster/` succeeds with no errors.
+6. **Tests pass**: `npm test` in `taskmaster/` succeeds.
+7. **No API contract change**: Response codes (404, 409, 200) and response bodies remain identical for all non-concurrent scenarios.",2026-04-06 11:15:40.764353+00
+33497f6a-edbe-46e0-9f55-8270d81a4c78,8cdfd25f-e087-455b-a58d-44eb898868b3,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:07:10.328Z
+
+claims-ui:
+  build:  built (6s) -> localhost:31500/tmpclaw/claims-ui:1775462805
+  deploy: deployed
+```",2026-04-06 08:07:44.584073+00
+5039c6e0-4081-4527-b417-f5d1c1431440,bf5424f6-adee-417f-b2a4-2558e9be9fc5,operator,"[Previous description]
+Implement status transition validation (draft→submitted, submitted→under_review→approved/rejected, rejected→draft, approved→paid)",2026-04-06 08:12:01.239155+00
+8fd11807-844a-4702-ba6b-b177cba591c7,c7894170-ab10-4a62-94da-576849c812a5,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:13:44.848Z
+
+claims-ui:
+  build:  built (31s) -> localhost:31500/tmpclaw/claims-ui:1775463176
+  deploy: deployed
+```",2026-04-06 08:14:10.61671+00
+e683e23c-67cf-4862-87b2-1a5296abb70c,db0fcd31-f8ed-4720-aa6c-98a498cbbd0c,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T08:20:23.664Z
+
+taskmaster:
+  build:  built (12s) -> localhost:31500/tmpclaw/taskmaster:1775463593
+  deploy: deployed
+```",2026-04-06 08:21:07.256559+00
+5c75b2e0-3b37-4bc5-bb0e-d8fb5efba146,156927ec-20f1-4a52-a10b-d6b82a4ac529,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T09:01:59.332Z
+
+taskmaster:
+  build:  built (27s) -> localhost:31500/tmpclaw/taskmaster:1775466073
+  deploy: deployed
+```",2026-04-06 09:02:50.625384+00
+7c5fef2c-8e85-407e-b44d-7af86ba3d482,bf5424f6-adee-417f-b2a4-2558e9be9fc5,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T09:26:38.538Z
+
+taskmaster:
+  build:  built (181s) -> localhost:31500/tmpclaw/taskmaster:1775467374
+  deploy: deployed
+```",2026-04-06 09:28:00.061824+00
+aa59d0e9-c3f3-48e8-a607-365bfb5fd296,15457f73-f228-4e52-be09-b5c42f6dbc06,operator,"Deploy failed:
+```
+Deploy run: 2026-04-05T21:56:09.678Z
+
+taskmaster:
+  build:  built (7s) -> localhost:31500/tmpclaw/taskmaster:1775426160
+  deploy: deploy failed: Helm deploy failed: Command failed: helm upgrade --install taskmaster /workspace/repo/taskmaster/chart --namespace tmpclaw --reset-values --set image.repository=localhost:31500/tmpclaw/taskmaster --set-string image.tag=1775426160 --set imagePullPolicy=Always --wait --timeout 120s --history-max 10
+Error: UPGRADE FAILED: could not get information about the resource: networkpolicies.networking.k8s.io ""taskmaster"" is forbidden: User ""system:serviceaccount:tmpclaw:tmpclaw-agent-web"" cannot get resource ""networkpolicies"" in API group ""networking.k8s.io"" in the namespace ""tmpclaw""
+
+```",2026-04-05 21:56:24.153858+00
+453d1891-e204-4709-9dc3-ca91a7ba58a3,bf5424f6-adee-417f-b2a4-2558e9be9fc5,operator,"[Previous description]
+Now I have the full picture. Here's the rework plan:
+
+## Rework Plan
+
+### 1. What Was Requested
+
+| # | Source | Issue | Severity |
+|---|--------|-------|----------|
+| C1 | Architecture | **Conflicting state machine**: `PATCH /api/claims/:id` (line 655) has hardcoded `VALID_ACTIONS` with transitions that contradict `claim-transitions.ts` — allows `submitted → approved` directly, has no `under_review` state | Critical |
+| S1 | Architecture | **Self-transition query outside transaction**: line 461 does a `pool.query` SELECT after ROLLBACK instead of reusing the already-fetched `claimRows[0]` | Suggestion |
+| S2 | Architecture | **Inconsistent null for absent comment**: new endpoint uses `body.comment ?? """"` (line 496) while old endpoint uses `comment ?? null` (line 707) — should be consistent | Suggestion |
+| S3 | Architecture | **Untyped TRANSITION_MAP key**: `Record<string, ...>` should be `Record<ClaimStatus, ...>` for exhaustiveness checking | Suggestion |
+
+### 2. What to Fix
+
+**C1 — `taskmaster/src/index.ts` lines 655–720 (`handleClaimById` PATCH branch)**
+Replace the hardcoded `VALID_ACTIONS` map with delegation to `isValidClaimTransition()` from `claim-transitions.ts`. The action-to-status mapping (`submit → submitted`, `approve → approved`, etc.) can remain for API ergonomics, but the actual validity check must use the canonical state machine. This means:
+- Import `isValidClaimTransition` and `allowedClaimTransitions` (if not already imported at top of file)
+- Remove the `VALID_ACTIONS` map with its incorrect `from` arrays
+- Keep an `ACTION_TO_STATUS` map that only maps action names to target statuses (no `from` field)
+- Validate using `isValidClaimTransition(claim.status, targetStatus)` instead of `transition.from.includes(claim.status)`
+- Update the error response to include `allowed: allowedClaimTransitions(claim.status)`
+
+**S1 — `taskmaster/src/index.ts` line 459–464 (self-transition path in `handleClaimStatus`)**
+After ROLLBACK, return `claimRows[0]` directly instead of issuing a separate `pool.query`. But note `claimRows` only selected `id, status` (line 442), so either:
+- Change the initial SELECT to `SELECT * FROM claims WHERE id = $1` (simplest), or
+- Fetch the full claim within the transaction before ROLLBACK
+
+**S2 — `taskmaster/src/index.ts` line 496 (comment in `handleClaimStatus`)**
+Change `body.comment ?? """"` to `body.comment ?? null` to match the convention in the old endpoint (line 707).
+
+**S3 — `taskmaster/src/claim-transitions.ts` line 32**
+Change `Record<string, ReadonlySet<string>>` to `Record<ClaimStatus, ReadonlySet<string>>`.
+
+### 3. Step-by-Step Rework
+
+1. **Update `TRANSITION_MAP` type** in `taskmaster/src/claim-transitions.ts`:
+   - Line 32: change `Record<string, ReadonlySet<string>>` → `Record<ClaimStatus, ReadonlySet<string>>`
+
+2. **Fix self-transition path** in `taskmaster/src/index.ts` `handleClaimStatus`:
+   - Line 442: change `SELECT id, status FROM claims` → `SELECT * FROM claims`
+   - Lines 460–463: replace the `pool.query` SELECT with `json(res, claimRows[0])` directly — the full row is already fetched
+
+3. **Fix null consistency for comment** in `taskmaster/src/index.ts` `handleClaimStatus`:
+   - Line 496: change `body.comment ?? """"` → `body.comment ?? null`
+
+4. **Refactor `handleClaimById` PATCH** in `taskmaster/src/index.ts` (lines 655–720):
+   - Ensure `isValidClaimTransition` and `allowedClaimTransitions` are imported from `./claim-transitions.js` (check existing imports)
+   - Replace the `VALID_ACTIONS` map (lines 661–666) with a simpler action-to-target-status map:
+     ```ts
+     const ACTION_TARGET: Record<string, string> = {
+       submit: ""submitted"",
+       review: ""under_review"",
+       approve: ""approved"",
+       reject: ""rejected"",
+       mark_paid: ""paid"",
+     };
+     ```
+     Note: add `review` action to support the new `under_review` state.
+   - Replace the `transition.from.includes` check (line 682) with `isValidClaimTransition(claim.status, targetStatus)`
+   - Update the 409 error response (line 684) to use `allowedClaimTransitions(claim.status)` for the allowed list
+   - Remove the now-unused `transition.from` references
+
+5. **Run build**: `cd taskmaster && npm run build`
+
+6. **Run tests**: `cd taskmaster && npm test`
+
+### 4. Verification
+
+| Issue | How to verify |
+|-------|---------------|
+| C1 | `npm run build` passes; `npm test` passes; grep `VALID_ACTIONS` in `index.ts` returns no results; the old PATCH endpoint now uses `isValidClaimTransition()` — confirm by reading the refactored code |
+| S1 | In `handleClaimStatus`, the self-transition path no longer calls `pool.query` — it returns `claimRows[0]` directly |
+| S2 | Grep for `?? """"` in the claim status handler — should find none; both endpoints use `?? null` for comment |
+| S3 | `TRANSITION_MAP` is typed `Record<ClaimStatus, ...>` — build will fail if any status is missing from the map |",2026-04-06 08:28:06.932714+00
+e48568b5-a0e0-4002-869f-e218dfd302f9,d79c5d21-5dec-4d59-b02a-2527f0ba2557,operator,"[Previous description]
+Pattern seen in 2 recent tasks (c7894170, f0cbff08): the deploy agent runs and discovers the branch is already merged to main (ALREADY_ON_MAIN / ALREADY_COMPLETE). This wastes agent compute time on unnecessary review and deploy cycles.
+
+Proposed fix: Before spawning reviewer and deploy agents, the operator should check if the task branch has already been merged to main (e.g., git merge-base --is-ancestor check or comparing branch HEAD to main HEAD). If already merged, skip straight to marking the task as done.",2026-04-06 08:44:46.737117+00
+e38fc2cd-41dc-4c04-890d-855974ff4d27,3825e28a-cf87-44e4-a302-247bc0bd0f48,janitor,[janitor] Task was stuck in 'developing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 12:07:07.43531+00
+bb060c3c-ee46-4972-ae2d-982ef549bd59,3825e28a-cf87-44e4-a302-247bc0bd0f48,operator,"[Previous description]
+Now I have the complete picture. Here is the rework plan:
+
+## Rework Plan
+
+### 1. What Was Requested
+
+The merge attempt `merge-3825e28a-cf87-44e4-a302-247bc0bd0f48-1775471979008` failed with **""pod failed to start""**. Investigation shows this was a **transient Kubernetes infrastructure failure** — the merge agent pod (script-agent) never entered Running state. The same image (`localhost:31500/tmpclaw/script-agent:1775048380`) successfully ran merges immediately before and after this attempt. The taskmaster code itself compiles cleanly (`tsc` exits 0) and tests pass at the same rate as `main` (491/493 pass; the 2 failures are pre-existing on `main`).
+
+**Root cause:** The merge agent pod failed to schedule/start, not the taskmaster application. No code review feedback was provided — this is a retry scenario.
+
+### 2. What to Fix
+
+Despite the transient failure, there are **two hygiene issues** in the branch that should be cleaned up before re-pushing:
+
+| # | Issue | File | Fix |
+|---|-------|------|-----|
+| 1 | Stale `operator/package-lock.json` version downgrade | `operator/package-lock.json` | Revert — this file should not be in the diff. The branch changed `0.2.59` → `0.2.58`, which is a stale lockfile from before `main` was updated. |
+| 2 | Deleted `claims.test.ts` tests not replaced | `taskmaster/src/claims.test.ts` | 115 lines of PATCH schema + transition tests were deleted because the old behavior changed, but **no replacement tests** were added for the new action-based PATCH contract. This won't block the build but leaves a gap in coverage. |
+
+### 3. Step-by-Step Rework
+
+**Step 1: Revert the stale `operator/package-lock.json` change**
+
+This file is not related to the RBAC work. The branch has a version downgrade (`0.2.59` → `0.2.58`) that conflicts with main. Revert it:
+
+```bash
+git checkout origin/main -- operator/package-lock.json
+```
+
+This removes the file from the diff entirely, preventing potential merge conflicts or stale dependency resolution.
+
+**Step 2: Add replacement tests for the new PATCH action-based handler**
+
+In `taskmaster/src/claims.test.ts`, add unit tests that cover the new PATCH contract. The old tests tested `{ status: ""submitted"" }` and `{ title: ""Updated"", status: ""submitted"" }` bodies — these no longer apply. New tests should validate:
+
+- The `ACTION_TARGET` mapping: `submit` → `""submitted""`, `review` → `""under_review""`, `approve` → `""approved""`, `reject` → `""rejected""`, `mark_paid` → `""paid""`
+- Missing `action` field returns 400
+- Invalid `action` value returns 400
+- `comment` field is optional (type string, maxLength 5000 if validated)
+
+These are pure schema/logic tests that don't require a database. Model them on the existing `CREATE_CLAIM_SCHEMA validation` tests in the same file.
+
+**Step 3: Verify the build compiles**
+
+```bash
+cd taskmaster && npm run build
+```
+
+**Step 4: Verify tests pass**
+
+```bash
+cd taskmaster && npm test
+```
+
+Confirm no new failures beyond the 2 pre-existing ones (`developing → todo` and `wrong operator secret` in `api.test.ts` — both exist on `main`).
+
+**Step 5: Commit and force-push**
+
+```bash
+git add -A && git commit -m ""fix: revert stale operator lockfile, add PATCH action tests""
+git push -f origin task/3825e28a
+```
+
+The merge pipeline will retry automatically.
+
+### 4. Verification
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| `operator/package-lock.json` not in diff | `git diff origin/main --stat \| grep operator` | No output |
+| TypeScript compiles | `cd taskmaster && npm run build` | Exit 0 |
+| Tests pass | `cd taskmaster && npm test` | 491+ pass, ≤2 pre-existing failures |
+| New PATCH tests exist | `grep ""action"" taskmaster/src/claims.test.ts` | Tests for action-based body present |
+| RBAC code unchanged | `git diff origin/main -- taskmaster/src/index.ts \| grep resolveUser \| wc -l` | >0 (helpers still present) |
+| No `body.actor_id` for identity | `grep ""body.actor_id"" taskmaster/src/index.ts` | 0 matches |
+| `FOR UPDATE` preserved | `grep ""FOR UPDATE"" taskmaster/src/index.ts` | ≥2 matches (handleClaimStatus + PATCH) |
+
+**Note:** The `claims-manager/public/ui/claims-manager.js` line 346 still sends a hardcoded `actor_id` in its PATCH body. This is harmless — the backend ignores it (derives actor from auth). No change needed on this branch; it can be cleaned up as a separate task.",2026-04-06 12:17:48.518565+00
+8d63b00c-615a-4e74-b9b7-c1416b6b54f2,3825e28a-cf87-44e4-a302-247bc0bd0f48,janitor,[janitor] Task was stuck in 'developing' for over 30 minutes. Resetting to changes_requested.,2026-04-06 13:12:05.898884+00
+7efb8c86-f0db-4e87-a2e6-ceae622461df,3825e28a-cf87-44e4-a302-247bc0bd0f48,operator,"[Previous description]
+Now I have the full picture. Let me produce the implementation plan.
+
+## Implementation Plan
+
+### 1. Summary
+
+Clean up two hygiene issues on the RBAC enforcement branch (`task/3825e28a`) — revert a stale `operator/package-lock.json` version downgrade and add replacement unit tests for the new action-based PATCH claim contract — so the merge pipeline can retry successfully.
+
+### 2. Approach
+
+The RBAC enforcement code is **already fully implemented** on this branch. All 7 claim-related handlers (`handleUsers`, `handleClaimStatus`, `handleClaims`, `handleClaimById`, `handleClaimsExportCsv`, `handleClaimReceipts`, `handleLineItemReceipts`) already receive `auth: TokenClaims`, use `resolveUser()` / `requireRole()` / `canAccessClaim()` helpers, and the router passes `claims!` to all of them. The previous merge attempt failed due to a transient K8s pod scheduling failure, not a code issue.
+
+Two hygiene items remain:
+
+1. **Stale lockfile**: `operator/package-lock.json` has a spurious `0.2.59` → `0.2.58` version downgrade that conflicts with main. Revert it by checking out the file from `origin/main`.
+
+2. **Missing test coverage**: The branch deleted 115 lines of old PATCH schema/transition tests (which tested the now-removed `{ status: ""submitted"" }` body format and `ALL_CLAIM_STATUSES` import) but added no replacement tests for the new action-based PATCH contract (`{ action: ""submit"", comment?: ""..."" }`). Add pure schema/logic tests that validate the new contract without requiring a database.
+
+### 3. Files to Change
+
+| File | Action | Reason |
+|------|--------|--------|
+| `operator/package-lock.json` | Revert to main | Remove stale version downgrade (`0.2.59` → `0.2.58`) from diff |
+| `taskmaster/src/claims.test.ts` | Modify (append tests) | Replace deleted old PATCH tests with new action-based PATCH contract tests |
+
+No other files need changes. The RBAC implementation in `taskmaster/src/index.ts` is complete and correct.
+
+### 4. Step-by-Step Implementation
+
+**Step 1: Revert the stale `operator/package-lock.json`**
+
+- Run `git checkout origin/main -- operator/package-lock.json` to restore the file from main
+- Verify the file is no longer in the diff: `git diff origin/main -- operator/package-lock.json` should produce no output
+
+**Step 2: Add replacement tests for the action-based PATCH contract**
+
+In `taskmaster/src/claims.test.ts`, append a new `describe` block after the existing ""amount validation edge cases"" section. The new tests should cover:
+
+**2a. ACTION_TARGET mapping tests:**
+- Define the `ACTION_TARGET` map inline (same as in `index.ts`): `{ submit: ""submitted"", review: ""under_review"", approve: ""approved"", reject: ""rejected"", mark_paid: ""paid"" }`
+- Test that each action key maps to the correct target status (5 assertions)
+- Test that the map contains exactly 5 entries (no unexpected actions)
+
+**2b. Missing `action` field returns an error:**
+- Simulate the handler's validation: if `body.action` is `undefined`, it should be treated as invalid
+- Test with `{}` (empty body) — action is missing
+- Test with `{ comment: ""just a comment"" }` — action still missing
+
+**2c. Invalid `action` value:**
+- Test with `{ action: ""invalid_action"" }` — not in ACTION_TARGET keys
+- Test with `{ action: """" }` — empty string not a valid action
+- Test with `{ action: ""SUBMIT"" }` — case sensitivity (actions are lowercase)
+
+**2d. Comment field is optional:**
+- Test with `{ action: ""submit"" }` — no comment, should be valid
+- Test with `{ action: ""approve"", comment: ""Looks good"" }` — with comment, should be valid
+- Test with `{ action: ""reject"", comment: ""x"".repeat(5000) }` — at max length boundary, should be valid
+
+**2e. CLAIM_STATUS_SCHEMA updated contract:**
+- Replicate the updated `CLAIM_STATUS_SCHEMA` (where `actor_id` is now optional, not required)
+- Test that a body with only `status` (no `actor_id`) passes validation
+- Test that a body with `status` + optional `actor_id` passes validation
+- Test that missing `status` fails validation
+
+**Modeling note:** These tests should follow the same pattern as the existing `CREATE_CLAIM_SCHEMA validation` tests — pure `validateBody()` calls against replicated schemas, no DB required. For the ACTION_TARGET logic tests, use direct JavaScript assertions against a local copy of the map.
+
+**Step 3: Verify build compiles**
+
+- Run `cd taskmaster && npm run build`
+- Expect exit code 0
+
+**Step 4: Verify tests pass**
+
+- Run `cd taskmaster && npm test`
+- Expect all new tests pass; no more than 2 pre-existing failures (the `developing → todo` and `wrong operator secret` failures that also exist on main)
+
+**Step 5: Commit and force-push**
+
+- Stage all changes: `git add operator/package-lock.json taskmaster/src/claims.test.ts`
+- Commit: `git commit -m ""fix: revert stale operator lockfile, add PATCH action tests""`
+- Force-push: `git push -f origin task/3825e28a`
+
+### 5. Edge Cases & Risks
+
+| Risk | Mitigation |
+|------|------------|
+| `operator/package-lock.json` on main may have changed since branch creation | `git checkout origin/main -- operator/package-lock.json` always gets the latest; run `git fetch origin` first |
+| New tests import something that doesn't exist in the test file context | All new tests use only `validateBody` (already imported) and local constants — no new imports needed for schema tests. The ACTION_TARGET map is replicated locally, not imported from `index.ts` |
+| `claim-transitions.js` import was removed in the diff | Correct — the old tests used `ALL_CLAIM_STATUSES` from `claim-transitions.js`. New tests do NOT need this import since they test the action-based contract, not status enumeration |
+| Test count changes could mask a regression | Compare test count before and after; new tests should add ~12-15 tests, total should increase by that amount |
+| The 2 pre-existing test failures on main | These are in `api.test.ts`, not `claims.test.ts`. They are unrelated to this work and should remain unchanged |
+
+### 6. Acceptance Criteria
+
+| Check | How to Verify | Expected |
+|-------|--------------|----------|
+| `operator/package-lock.json` not in diff | `git diff origin/main --stat \| grep operator` | No output |
+| TypeScript compiles | `cd taskmaster && npm run build` | Exit 0 |
+| Tests pass | `cd taskmaster && npm test` | All new tests pass; ≤2 pre-existing failures |
+| ACTION_TARGET mapping tests exist | `grep ""ACTION_TARGET"" taskmaster/src/claims.test.ts` | Matches present |
+| Missing action tests exist | `grep ""Missing.*action"" taskmaster/src/claims.test.ts` | At least 1 match |
+| Invalid action tests exist | `grep ""Invalid action\|invalid_action"" taskmaster/src/claims.test.ts` | At least 1 match |
+| Comment optional tests exist | `grep ""comment.*optional\|without comment\|with comment"" taskmaster/src/claims.test.ts` | At least 1 match |
+| Updated CLAIM_STATUS_SCHEMA tests exist | `grep ""actor_id.*optional\|CLAIM_STATUS_SCHEMA"" taskmaster/src/claims.test.ts` | At least 1 match |
+| RBAC code unchanged | `git diff HEAD~ -- taskmaster/src/index.ts` | Empty (no index.ts changes in this commit) |
+| `resolveUser` still present | `grep ""resolveUser"" taskmaster/src/index.ts` | ≥7 matches |
+| `FOR UPDATE` preserved | `grep ""FOR UPDATE"" taskmaster/src/index.ts` | ≥2 matches |
+| No `body.actor_id` for identity | `grep ""body.actor_id"" taskmaster/src/index.ts` | 0 matches in handler logic (only in interface/schema definition) |",2026-04-06 13:19:21.633017+00
+8a26d3ca-1a3c-4047-9f89-912da0eb49aa,156927ec-20f1-4a52-a10b-d6b82a4ac529,operator,"[Previous description]
+## Bug
+
+When editing a draft claim via PUT /api/claims/:id, the handler deletes all existing line_items (`DELETE FROM line_items WHERE claim_id = $1`) and reinserts them. The `receipts` table has `ON DELETE CASCADE` on `line_item_id`, so all receipt metadata rows are silently deleted — but the actual receipt files on disk (referenced by `storage_path`) are never removed.
+
+This means:
+1. Users lose all uploaded receipts when editing a draft claim's line items
+2. Orphaned files accumulate on disk with no cleanup path
+
+## Found by
+Architecture reviewer on task d7d84142 (draft editing feature).
+Relevant code: `taskmaster/src/index.ts` around line 643, and `taskmaster/src/db.ts` around line 1166.
+
+## Acceptance Criteria
+- When line items are deleted/replaced during claim editing, associated receipt files are deleted from disk before the DB cascade runs
+- OR: Preserve existing line item IDs where possible (match by ID) instead of delete-and-reinsert, so receipts are not lost
+- OR: At minimum, query receipt storage_paths and delete files before running DELETE FROM line_items
+- Add a test that verifies receipt files are cleaned up when line items are replaced",2026-04-06 08:52:37.66739+00
+e58ff42c-6760-487f-80fb-ac1e6b74c059,13ea9b23-9b8e-4886-9dfb-7c0d19e5cd06,operator,"[Previous description]
+GET /api/claims — list claims filtered by role (own claims for employee, team claims for manager, all approved for finance)",2026-04-06 09:37:55.365897+00
+e79682dd-60cb-422b-a5fe-47dfbc267b5a,3c7c2515-5273-4f82-86d1-10e00f7229fb,operator,"[Previous description]
+The handleClaimStatus handler (taskmaster/src/index.ts:400) reads the claim with `SELECT * FROM claims WHERE id = $1` without `FOR UPDATE`. Two concurrent PATCH requests can both read the same status and both proceed with the transition, allowing double-transitions (e.g. two simultaneous under_review→approved and under_review→rejected both succeeding). Fix: change to `SELECT * FROM claims WHERE id = $1 FOR UPDATE` to match the existing pattern at line 765. Identified by architecture review of task bf5424f6.",2026-04-06 09:45:08.117308+00
+cdb37b69-63d6-45fc-8dfa-275f5bd21367,13ea9b23-9b8e-4886-9dfb-7c0d19e5cd06,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T09:58:40.805Z
+
+taskmaster:
+  build:  built (234s) -> localhost:31500/tmpclaw/taskmaster:1775469254
+  deploy: deployed
+```",2026-04-06 09:59:37.296354+00
+18e8c294-867c-473a-aea1-e091cd7126d5,8fd4c2cd-de08-4599-b704-7b9eeb2d1909,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T10:02:30.250Z
+
+claims-ui:
+  build:  built (117s) -> localhost:31500/tmpclaw/claims-ui:1775469610
+  deploy: deployed
+```",2026-04-06 10:04:13.257555+00
+5db2e08d-5ff2-45ab-8b27-0f2eddeafdb1,220825ee-c005-4c94-a289-e7c95bb906c0,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T10:03:17.709Z
+
+claims-ui:
+  build:  skipped (config-only, using existing image)
+  deploy: deployed (config-only)
+flood:
+  build:  built (100s) -> localhost:31500/tmpclaw/flood:1775468902
+  deploy: deployed
+launcher:
+  build:  built (74s) -> localhost:31500/tmpclaw/launcher:1775468902
+  deploy: deployed
+matrix:
+  build:  skipped (config-only, using existing image)
+  deploy: deployed (config-only)
+portal:
+  build:  built (76s) -> localhost:31500/tmpclaw/portal:1775468902
+  deploy: deployed
+project-shell:
+  build:  built (204s) -> localhost:31500/tmpclaw/project-shell:1775468902
+  deploy: deployed
+projects-ui:
+  build:  built (101s) -> localhost:31500/tmpclaw/projects-ui:1775468902
+  deploy: deployed
+taskmaster:
+  build:  built (136s) -> localhost:31500/tmpclaw/taskmaster:1775468902
+  deploy: deployed
+```",2026-04-06 10:04:42.931313+00
+53666eca-eaa2-41a7-895d-98cf10f8f252,3c7c2515-5273-4f82-86d1-10e00f7229fb,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T10:05:55.214Z
+
+taskmaster:
+  build:  built (48s) -> localhost:31500/tmpclaw/taskmaster:1775469888
+  deploy: deployed
+```",2026-04-06 10:06:19.244339+00
+406b3d0a-143d-48bd-bbcc-1d615d3496ed,2431486f-adf4-494e-be1a-bb3d20d92745,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T10:24:35.219Z
+
+taskmaster:
+  build:  built (37s) -> localhost:31500/tmpclaw/taskmaster:1775471020
+  deploy: deployed
+```",2026-04-06 10:29:10.538576+00
+f10b77bd-75fa-4755-b82a-2f21a2221d46,9d595ca9-e127-4bac-8811-5cea77c95b6c,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T10:45:57.214Z
+
+operator:
+  build:  built (17s) -> localhost:31500/tmpclaw/operator:1775472288
+  deploy: deployed
+```",2026-04-06 10:50:03.42012+00
+797fb33e-877c-4572-9334-ee969c7b0e53,2393c86c-bb6a-42e5-a3b2-74bd7ce34ac6,operator,"[Previous description]
+## Problem
+
+In `taskmaster/src/index.ts`, the PUT handler in `handleClaimById` (line 662-664) reads the claim status with `pool.query` *outside* its transaction (which starts at line 697-699). Two concurrent PUT requests can both pass the `status === ""draft""` check before either begins its transaction, allowing concurrent edits that should be serialized.
+
+## Root Cause
+
+The SELECT at line 663 (`SELECT * FROM claims WHERE id = $1`) runs on the connection pool, not inside the `BEGIN`/`COMMIT` transaction block that starts at line 699. This is a TOCTOU (time-of-check-time-of-use) race condition.
+
+## Fix
+
+Move the status check inside the transaction and add `FOR UPDATE` to the SELECT query, matching the pattern already established at lines 400 and 765.
+
+Specifically:
+1. Move lines 662-669 (the SELECT + status check) to after `await client.query(""BEGIN"")` at line 699
+2. Change the query to use `client.query` instead of `pool.query`
+3. Add `FOR UPDATE` to the SELECT
+
+## Severity
+
+Low — concurrent edits to a draft claim result in last-writer-wins, which is acceptable but not ideal. The fix ensures proper serialization.
+
+## Identified By
+
+Task 3c7c2515 (FOR UPDATE fix) implementation plan, section 5 (Edge Cases & Risks).",2026-04-06 10:56:39.835599+00
+164c7bd4-022f-4d15-81ac-f050b300bdd2,3a9aff3a-9e45-4557-896b-7015709ad993,operator,"[Previous description]
+The work described in this ticket is **already implemented** on this branch. Commit `974c5638` (""feat(portal): update HTML shell to warm neutral palette (slate, teal, warm white)"") already delivers:
+
+- Dark theme: warm slate backgrounds (`#0f1317`, `#171d24`), teal accents (`#14b8a6`, `#5eead4`), warm white text (`#ece8e1`)
+- Light theme: warm off-white backgrounds (`#f8f5f1`, `#fefcf9`), teal accents (`#0d9488`), slate text (`#1e293b`)
+- All colors via CSS custom properties
+- Both desktop (`portal/public/index.html`) and mobile (`portal/public/mobile/index.html`) shells updated
+- Responsive CSS with breakpoints preserved
+
+## Implementation Plan
+
+### ALREADY_COMPLETE
+
+This ticket's requirements are fully satisfied by commit `974c5638` on branch `task/3a9aff3a`. The HTML shell has been updated to a warm neutral palette (slate, teal, warm white) with responsive CSS. Both desktop and mobile shells are consistent.
+
+**Commit:** `974c5638` — `feat(portal): update HTML shell to warm neutral palette (slate, teal, warm white)`
+
+**Files changed:**
+- `portal/public/index.html` — desktop shell palette
+- `portal/public/mobile/index.html` — mobile shell palette
+
+**No further implementation is needed.** The branch should be pushed for review/merge.
+
+BRANCH: task/3a9aff3a",2026-04-06 11:03:59.003047+00
+08e4d169-d653-4067-822b-89275afcf6b7,2393c86c-bb6a-42e5-a3b2-74bd7ce34ac6,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T11:44:48.433Z
+
+taskmaster:
+  build:  built (13s) -> localhost:31500/tmpclaw/taskmaster:1775475858
+  deploy: deployed
+```",2026-04-06 11:45:08.824082+00
+89e92a98-7e34-4bef-8c18-5559ed8733b0,3a9aff3a-9e45-4557-896b-7015709ad993,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T11:44:37.126Z
+
+portal:
+  build:  skipped (config-only, using existing image)
+  deploy: deployed (config-only)
+```",2026-04-06 11:45:08.848386+00
+f32543bf-a655-4b18-b1fa-ba91a28e7aed,37e7525b-5be6-4160-b7ca-25785f57e36b,operator,"[Previous description]
+In claims-ui/public/ui/claims.js, fetchClaimDetail re-fetches the full claims list (API_BASE) instead of a single claim endpoint (e.g. API_BASE + ""/"" + id). This works but is inefficient — add a single-claim fetch path if the taskmaster API supports it, or add one if not. Flagged in review of task a4f9e580.",2026-04-06 12:07:17.464848+00
+3b40ea68-adf2-491d-85eb-3840b5a970ac,542b7d17-1f4a-447f-9824-729200b2d34e,operator,"[Previous description]
+Two tests in `taskmaster/src/api.test.ts` have been failing on main, causing false build failure reports for unrelated task branches:
+
+1. **`developing → todo (backward pipeline is invalid)`** (line ~1835) — expects 409 but gets 200
+2. **`wrong operator secret does not bypass`** (line ~2038) — expects 409 but gets 200
+
+Both tests validate that backward pipeline status transitions (`developing → todo`) are rejected. The status transition validation logic is not enforcing this constraint.
+
+**Impact**: These pre-existing failures caused task 2393c86c (TOCTOU fix) to be incorrectly reported as a build failure, wasting ~97 minutes of agent time on rework analysis for a correct implementation.
+
+**Root cause**: The task status transition validation in `taskmaster/src/index.ts` appears to allow `developing → todo` when it should reject it as a backward pipeline move. The `X-Operator-Override` header bypass logic may also be broken (wrong secret should not bypass validation).
+
+**Fix**: Debug the PATCH `/api/tasks/:id` status transition logic to ensure backward pipeline moves are rejected (409) unless a valid operator override secret is provided.",2026-04-06 13:08:05.23242+00
+7237d27b-210e-4132-9cea-cfc0dd2d6f6b,542b7d17-1f4a-447f-9824-729200b2d34e,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T13:19:43.529Z
+
+operator:
+  build:  built (27s) -> localhost:31500/tmpclaw/operator:1775481469
+  deploy: deployed
+portal:
+  build:  built (17s) -> localhost:31500/tmpclaw/portal:1775481469
+  deploy: deployed
+taskmaster:
+  build:  built (4s) -> localhost:31500/tmpclaw/taskmaster:1775481469
+  deploy: deployed
+```",2026-04-06 13:19:57.072932+00
+9c4affd0-6716-49ec-a869-447ee3e4f93b,3825e28a-cf87-44e4-a302-247bc0bd0f48,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T13:31:54.515Z
+
+taskmaster:
+  build:  built (6s) -> localhost:31500/tmpclaw/taskmaster:1775482291
+  deploy: deployed
+```",2026-04-06 13:32:16.503851+00
+87d725a2-b536-48ce-9ecc-8e8fb31b68c0,0b393d3e-1bce-4f71-a752-2f67de8c6f6d,operator,"[Previous description]
+The POST /api/claims handler accepts any `submitter_id` from the request body without checking that the authenticated user is authorized to create claims on behalf of that submitter. An employee can create claims attributed to another user by supplying a different `submitter_id`.
+
+The task was ""Enforce RBAC on all endpoints"" but POST was missed. The `resolveUser()` helper derives the authenticated user, but the handler trusts `body.submitter_id` for the claim record instead of using the authenticated identity.
+
+Fix: Either (a) ignore `body.submitter_id` and always use the authenticated user id from `resolveUser()`, or (b) if delegation is needed, verify the authenticated user has permission to create claims for the specified submitter.
+
+Found by architecture review of task 3825e28a.",2026-04-06 13:36:02.392955+00
+8f4ba208-d31d-4215-bc1f-f53e6b7d2bda,6d056945-fc79-4d8f-920b-e0c23a94d96a,operator,"[Previous description]
+The action-based PATCH handler in taskmaster/src/index.ts does not set `approver_id` when processing the `reject` action. The older `handleClaimStatus` handler (line ~522) correctly sets both `rejected_at` and `approver_id` on rejection. The new action-based handler only sets `rejected_at`, losing the identity of who rejected the claim.
+
+This breaks audit trail requirements — there is no record of which manager rejected a claim.
+
+Fix: Add `approver_id = $N` (with the authenticated user id) to the `reject` branch of the action-based PATCH handler. Also verify `approve` and `mark_paid` set `approver_id` consistently.
+
+Found by architecture review of task 3825e28a.",2026-04-06 13:36:02.835905+00
+80739384-5f39-4415-ac4b-2f728622547f,6d056945-fc79-4d8f-920b-e0c23a94d96a,operator,"Deploy failed:
+```
+Deploy run: 2026-04-06T13:44:38.407Z
+
+taskmaster:
+  build:  built (39s) -> localhost:31500/tmpclaw/taskmaster:1775483037
+  deploy: deploy failed: Helm deploy failed: Command failed: helm upgrade --install taskmaster /workspace/repo/taskmaster/chart --namespace tmpclaw --reset-values --set image.repository=localhost:31500/tmpclaw/taskmaster --set-string image.tag=1775483037 --set imagePullPolicy=Always --wait --timeout 120s --history-max 10
+Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+
+```",2026-04-06 13:45:02.475034+00
+5c9bbb9e-5b2c-4c6c-a063-3e100c028c42,0b393d3e-1bce-4f71-a752-2f67de8c6f6d,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T13:44:58.173Z
+
+taskmaster:
+  build:  built (39s) -> localhost:31500/tmpclaw/taskmaster:1775483037
+  deploy: deployed
+```",2026-04-06 13:45:14.27708+00
+699e24d1-9d7d-49a1-be89-5b50e3106885,c4dbfeb0-4360-4cca-bdc7-0bf8d298a42c,operator,"[Previous description]
+The action-based PATCH handler in taskmaster/src/index.ts groups `approve` and `mark_paid` together, setting `approved_at = now()` for both actions. When a claim transitions from approved → paid, this overwrites the original approval timestamp.
+
+Fix: Split `approve` and `mark_paid` into separate branches. `mark_paid` should set a `paid_at` column (or at minimum not overwrite `approved_at`). The `approve` branch should continue setting `approved_at`.
+
+Found by architecture review of task 3825e28a.",2026-04-06 13:47:43.143181+00
+885ba040-c733-46a8-8247-c24c802ac66c,c4dbfeb0-4360-4cca-bdc7-0bf8d298a42c,operator,"Deploy succeeded:
+```
+Deploy run: 2026-04-06T13:55:08.317Z
+
+taskmaster:
+  build:  built (6s) -> localhost:31500/tmpclaw/taskmaster:1775483682
+  deploy: deployed
+```",2026-04-06 13:55:28.540656+00

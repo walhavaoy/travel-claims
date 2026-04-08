@@ -1,0 +1,302 @@
+id,title,prd_text,context,analysis,status,task_id,artifact_id,created_at,updated_at,target_doc_draft
+79911db0-3763-477e-a6a5-a6c57030d6a6,Travel Claims & Receipts System,"A web application for submitting, tracking, and approving employee travel expense claims with receipt management.
+
+## Goals
+- Employees can submit travel expense claims with itemized costs and receipt uploads
+- Managers can review, approve, or reject claims with comments
+- Finance team can export approved claims for reimbursement processing
+
+## Requirements
+- Claim submission form: trip dates, destination, purpose, expense line items (category, description, amount, currency)
+- Receipt upload per line item (JPG/PNG/PDF, stored and displayable)
+- Claim statuses: draft, submitted, under_review, approved, rejected, paid
+- Manager review view: list of submitted claims, ability to approve/reject with comment
+- Finance export: CSV download of approved claims
+- Dashboard: employee sees their own claims with status; manager sees team claims
+- GET /api/claims, POST /api/claims, PATCH /api/claims/:id
+- GET /api/claims/:id/receipts, POST /api/claims/:id/receipts
+- Roles: employee (submit own), manager (review team), finance (export all)
+
+## Tech Stack
+- Node.js + Express backend
+- Vanilla JS or React frontend
+- SQLite for storage, multer for file uploads
+- Runs standalone on port 3000
+
+## Acceptance Criteria
+- [ ] Employee can create a claim with multiple line items
+- [ ] Receipt images can be uploaded and viewed per line item
+- [ ] Submitted claim shows in manager review queue
+- [ ] Manager can approve/reject with a reason
+- [ ] Approved claims appear in finance CSV export
+- [ ] Dashboard shows claim status with colour-coded badges
+- [ ] Mobile-responsive layout
+- [ ] All interactive elements have data-testid attributes
+
+## Constraints
+- Warm neutral palette (slate, teal, warm white)
+- Must use data-testid attributes on all interactive elements
+- All UI elements testable with Playwright
+
+---
+## Clarification (Round 1)
+
+**Q:** Q-01
+**A:** Use a simplified role-switching dropdown in the UI (no login screen needed). A dropdown at the top of the page lets the user select their role: employee, manager, or finance. The selected role determines what views and actions are available. Stub users: Alice (employee), Bob (manager), Carol (finance).
+
+**Q:** Q-02
+**A:** Use a simple department/team grouping. Each user has a department field. Managers see all claims from users in the same department. Use a manager_id foreign key on the users table pointing to their direct manager.
+
+**Q:** Q-03
+**A:** A reasonable default CSV format is acceptable: claim ID, employee name, department, trip dates, destination, purpose, total amount, currency, status, line items (category, description, amount), receipt count, submission date, approval date, approver name, approval comment.
+
+**Q:** Q-04
+**A:** Paid status is a manual action by finance. Finance can mark approved claims as paid from the finance view with a single button click. No external payment integration needed.
+
+**Q:** Q-05
+**A:** Record currencies as entered without normalization. Display amounts with their original currency. In CSV export, include the original currency per line item. No exchange rate conversion needed.
+
+**Q:** Q-06
+**A:** Use 10 MB per file as the maximum receipt upload size. Accept JPG, PNG, and PDF only.
+
+**Q:** Q-07
+**A:** No hard deadline. Deliver as soon as the pipeline completes.
+
+
+---
+## Clarification (Round 2)
+
+**Q:** Q-08
+**A:** Employees cannot edit or withdraw a submitted claim. Once submitted, the claim is immutable until a manager acts (approve or reject). Employees can only edit claims in draft status.
+
+**Q:** Q-09
+**A:** A rejected claim can be revised and resubmitted. When a manager rejects a claim, the status returns to draft and the employee can edit and resubmit it. The rejection comment is preserved in the claim history.
+
+**Q:** Q-10
+**A:** One receipt per line item is sufficient. Keep it simple - each line item can have at most one receipt file attached.
+
+
+---
+## Clarification (Round 3)
+
+**Q:** Q-11
+**A:** In the CSV export total amount column, list the total as a sum only when all line items use the same currency. If multiple currencies exist on a single claim, leave the total blank and rely on per-line-item amounts with their individual currencies. Add a note in the total column indicating mixed currencies.
+
+**Q:** Q-12
+**A:** Show the claim history to the employee in the UI as a simple timeline/log. Each status transition and rejection comment should be visible to the employee so they can track progress and understand why a claim was rejected.
+","{""language"": ""TypeScript"", ""repo_url"": ""git@github.com:walhavaoy/travel-claims.git"", ""component"": ""travel-claims"", ""framework"": ""Express + vanilla JS"", ""project_id"": ""e4e54fca-4253-41e1-a9e1-47616a07158d""}","{""risks"": [""SQLite does not support concurrent writes well — under load, simultaneous status transitions could conflict; acceptable for a single-user demo but not for production"", ""Receipt files stored on local filesystem — not suitable for horizontal scaling or container restarts without persistent volume"", ""No real authentication — role-switching dropdown means any user can act as any role; acceptable per PRD but not secure"", ""CSV export with mixed currencies per claim: the 'total amount' column is ambiguous when line items use different currencies — may confuse finance users"", ""No pagination on claim list endpoints — performance may degrade with large datasets"", ""10 MB file uploads with multer default memory storage could cause memory pressure under concurrent uploads — should use disk storage""], ""phases"": [{""name"": ""Phase 1 — Database Schema & Project Scaffold"", ""tasks"": [""Initialize TypeScript + Express project with build tooling"", ""Design and create SQLite schema: users, claims, line_items, receipts, claim_history tables"", ""Seed stub users (Alice/employee, Bob/manager, Carol/finance) with department and manager_id relationships"", ""Configure multer for file uploads with 10 MB limit and JPG/PNG/PDF filter"", ""Set up uploads directory for receipt file storage""], ""milestone"": ""Database initializes on startup with seeded users; project builds and starts on port 3000"", ""description"": ""Set up the TypeScript Express project, SQLite database, and seed data for stub users and departments.""}, {""name"": ""Phase 2 — Claims API & Receipt Upload"", ""tasks"": [""POST /api/claims — create a claim with line items (draft status)"", ""GET /api/claims — list claims filtered by role (own claims for employee, team claims for manager, all approved for finance)"", ""PATCH /api/claims/:id — update draft claims (edit line items, change status to submitted)"", ""POST /api/claims/:id/receipts — upload receipt for a specific line item"", ""GET /api/claims/:id/receipts — retrieve receipt metadata and serve files"", ""Implement status transition validation (draft→submitted, submitted→under_review→approved/rejected, rejected→draft, approved→paid)"", ""Record status changes and rejection comments in claim_history table""], ""milestone"": ""All API endpoints functional and testable via curl/Postman"", ""description"": ""Implement the core REST API for claim CRUD operations and receipt file upload/retrieval.""}, {""name"": ""Phase 3 — Manager Review & Finance Export"", ""tasks"": [""PATCH /api/claims/:id for manager approve/reject with comment (status transitions + history entry)"", ""GET /api/claims/export/csv — generate CSV of approved claims with the specified column format"", ""PATCH /api/claims/:id for finance mark-as-paid action"", ""Enforce role-based access control on all endpoints""], ""milestone"": ""Manager can approve/reject claims via API; finance can download CSV and mark claims paid"", ""description"": ""Implement manager approve/reject workflow and finance CSV export with mark-as-paid.""}, {""name"": ""Phase 4 — Frontend: Layout, Role Switcher & Dashboard"", ""tasks"": [""Create HTML shell with warm neutral palette (slate, teal, warm white) and responsive CSS"", ""Implement role-switching dropdown in header (Alice/Bob/Carol) with data-testid"", ""Build employee dashboard: list of own claims with colour-coded status badges"", ""Build manager dashboard: list of team submitted claims with review actions"", ""Build finance dashboard: list of approved claims with export button and mark-as-paid"", ""Add data-testid attributes to all interactive elements""], ""milestone"": ""All three role dashboards render correctly with live data; role switcher toggles views"", ""description"": ""Build the vanilla JS frontend with responsive layout, role-switching, and dashboard views.""}, {""name"": ""Phase 5 — Frontend: Claim Forms & Receipt Handling"", ""tasks"": [""Claim creation form: trip dates, destination, purpose, dynamic line items (add/remove rows)"", ""Line item fields: category, description, amount, currency with receipt upload button"", ""Receipt preview: display uploaded JPG/PNG inline, link to PDF"", ""Draft editing: pre-populate form for draft claims, allow edits and resubmission"", ""Manager review detail view: claim details with approve/reject buttons and comment input"", ""Display rejection history on claim detail for employee""], ""milestone"": ""Full end-to-end workflow works in the browser: create → submit → review → approve → export → mark paid"", ""description"": ""Build claim creation/edit form, line item management, and receipt upload/view UI.""}, {""name"": ""Phase 6 — Polish & Verification"", ""tasks"": [""Verify mobile-responsive layout at common breakpoints"", ""Audit all interactive elements for data-testid attributes"", ""Verify all acceptance criteria pass manually"", ""Verify colour-coded badges for all six statuses"", ""Test edge cases: multi-currency claims, max file size rejection, invalid file types""], ""milestone"": ""All acceptance criteria verified; application ready for Playwright testing"", ""description"": ""Final responsive design pass, cross-browser testing, and acceptance criteria verification.""}], ""summary"": ""A standalone web application enabling employees to submit itemized travel expense claims with receipt uploads, managers to review and approve/reject claims for their team, and finance to export approved claims as CSV and mark them as paid."", ""questions"": [], ""assumptions"": [""Single-instance deployment only — no need for shared file storage or database replication"", ""The three stub users (Alice, Bob, Carol) are pre-seeded on startup; no user registration flow is needed"", ""Bob is Alice's manager (same department); Carol is in a separate finance role that can see all approved claims regardless of department"", ""Claim history stores a log of status transitions with timestamps and comments, sufficient for tracking rejections and resubmissions"", ""The frontend is server-rendered or a single-page vanilla JS app served by the same Express server on port 3000"", ""No email notifications or external integrations are required"", ""PDF receipts are linked (download) rather than rendered inline in the browser"", ""The 'total amount' in CSV export sums line item amounts and appends the currency; for mixed-currency claims, line items are listed individually with their own currency""], ""requirements"": [{""id"": ""REQ-01"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Claim submission form with trip dates, destination, purpose, and expense line items (category, description, amount, currency)""}, {""id"": ""REQ-02"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Receipt upload per line item — JPG, PNG, or PDF, max 10 MB, at most one file per line item — stored on disk and viewable in the UI""}, {""id"": ""REQ-03"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Claim status lifecycle: draft → submitted → under_review → approved → paid, or draft → submitted → under_review → rejected → draft (for revision)""}, {""id"": ""REQ-04"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Manager review view: list of submitted claims from the same department, with ability to approve or reject each claim with a comment""}, {""id"": ""REQ-05"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Finance CSV export of approved claims with specified columns: claim ID, employee name, department, trip dates, destination, purpose, total amount, currency, status, line items, receipt count, submission date, approval date, approver name, approval comment""}, {""id"": ""REQ-06"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Finance can mark approved claims as paid with a single button click""}, {""id"": ""REQ-07"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Dashboard: employees see their own claims with status; managers see claims from their team""}, {""id"": ""REQ-08"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Role-switching dropdown (no auth) with stub users: Alice (employee), Bob (manager), Carol (finance)""}, {""id"": ""REQ-09"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Department-based team grouping with manager_id foreign key on users table""}, {""id"": ""REQ-10"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Draft claims are editable; submitted claims are immutable until manager acts""}, {""id"": ""REQ-11"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Rejected claims return to draft status; rejection comment preserved in claim history; employee can revise and resubmit""}, {""id"": ""REQ-12"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""REST API: GET /api/claims, POST /api/claims, PATCH /api/claims/:id, GET /api/claims/:id/receipts, POST /api/claims/:id/receipts""}, {""id"": ""REQ-13"", ""type"": ""functional"", ""priority"": ""must"", ""description"": ""Currencies recorded as entered per line item with no exchange rate conversion""}, {""id"": ""REQ-14"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""Mobile-responsive layout""}, {""id"": ""REQ-15"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""Warm neutral colour palette: slate, teal, warm white""}, {""id"": ""REQ-16"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""All interactive elements have data-testid attributes for Playwright testing""}, {""id"": ""REQ-17"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""TypeScript backend with Express, vanilla JS frontend, SQLite storage, multer for uploads""}, {""id"": ""REQ-18"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""Standalone application running on port 3000""}, {""id"": ""REQ-19"", ""type"": ""non-functional"", ""priority"": ""must"", ""description"": ""Max upload size 10 MB per file; accept JPG, PNG, PDF only""}, {""id"": ""REQ-20"", ""type"": ""functional"", ""priority"": ""should"", ""description"": ""Colour-coded status badges on dashboard (draft, submitted, under_review, approved, rejected, paid)""}]}",applied,4a0300a3-d5e0-4df5-ad0b-08044ffcafea,e4e54fca-4253-41e1-a9e1-47616a07158d,2026-04-05 21:13:50.40265+00,2026-04-05 21:34:09.800902+00,"---
+component: travel-claims
+area: services
+priority: P1
+status: draft
+created: 2026-04-05
+---
+
+# Travel Claims & Receipts System — Target Spec
+
+## Purpose
+
+A standalone web application enabling employees to submit itemized travel expense claims with receipt uploads, managers to review and approve/reject claims for their team, and finance to export approved claims as CSV and mark them as paid.
+
+## Requirements
+
+### Core
+
+- **REQ-01**: Claim submission form with trip dates, destination, purpose, and expense line items (category, description, amount, currency) *(must)*
+- **REQ-02**: Receipt upload per line item — JPG, PNG, or PDF, max 10 MB, at most one file per line item — stored on disk and viewable in the UI *(must)*
+- **REQ-03**: Claim status lifecycle: draft → submitted → under_review → approved → paid, or draft → submitted → under_review → rejected → draft (for revision) *(must)*
+- **REQ-04**: Manager review view: list of submitted claims from the same department, with ability to approve or reject each claim with a comment *(must)*
+- **REQ-05**: Finance CSV export of approved claims with specified columns: claim ID, employee name, department, trip dates, destination, purpose, total amount, currency, status, line items, receipt count, submission date, approval date, approver name, approval comment *(must)*
+- **REQ-06**: Finance can mark approved claims as paid with a single button click *(must)*
+- **REQ-07**: Dashboard: employees see their own claims with status; managers see claims from their team *(must)*
+- **REQ-08**: Role-switching dropdown (no auth) with stub users: Alice (employee), Bob (manager), Carol (finance) *(must)*
+- **REQ-09**: Department-based team grouping with manager_id foreign key on users table *(must)*
+- **REQ-10**: Draft claims are editable; submitted claims are immutable until manager acts *(must)*
+- **REQ-11**: Rejected claims return to draft status; rejection comment preserved in claim history; employee can revise and resubmit *(must)*
+- **REQ-12**: REST API: GET /api/claims, POST /api/claims, PATCH /api/claims/:id, GET /api/claims/:id/receipts, POST /api/claims/:id/receipts *(must)*
+- **REQ-13**: Currencies recorded as entered per line item with no exchange rate conversion *(must)*
+- **REQ-20**: Colour-coded status badges on dashboard (draft, submitted, under_review, approved, rejected, paid) *(should)*
+
+### Non-Functional
+
+- **REQ-14**: Mobile-responsive layout *(must)*
+- **REQ-15**: Warm neutral colour palette: slate, teal, warm white *(must)*
+- **REQ-16**: All interactive elements have data-testid attributes for Playwright testing *(must)*
+- **REQ-17**: TypeScript backend with Express, vanilla JS frontend, SQLite storage, multer for uploads *(must)*
+- **REQ-18**: Standalone application running on port 3000 *(must)*
+- **REQ-19**: Max upload size 10 MB per file; accept JPG, PNG, PDF only *(must)*
+
+## Phases
+
+### Phase 1 — Database Schema & Project Scaffold
+
+Set up the TypeScript Express project, SQLite database, and seed data for stub users and departments.
+
+- Initialize TypeScript + Express project with build tooling
+- Design and create SQLite schema: users, claims, line_items, receipts, claim_history tables
+- Seed stub users (Alice/employee, Bob/manager, Carol/finance) with department and manager_id relationships
+- Configure multer for file uploads with 10 MB limit and JPG/PNG/PDF filter
+- Set up uploads directory for receipt file storage
+
+**Milestone**: Database initializes on startup with seeded users; project builds and starts on port 3000
+
+### Phase 2 — Claims API & Receipt Upload
+
+Implement the core REST API for claim CRUD operations and receipt file upload/retrieval.
+
+- POST /api/claims — create a claim with line items (draft status)
+- GET /api/claims — list claims filtered by role (own claims for employee, team claims for manager, all approved for finance)
+- PATCH /api/claims/:id — update draft claims (edit line items, change status to submitted)
+- POST /api/claims/:id/receipts — upload receipt for a specific line item
+- GET /api/claims/:id/receipts — retrieve receipt metadata and serve files
+- Implement status transition validation (draft→submitted, submitted→under_review→approved/rejected, rejected→draft, approved→paid)
+- Record status changes and rejection comments in claim_history table
+
+**Milestone**: All API endpoints functional and testable via curl/Postman
+
+### Phase 3 — Manager Review & Finance Export
+
+Implement manager approve/reject workflow and finance CSV export with mark-as-paid.
+
+- PATCH /api/claims/:id for manager approve/reject with comment (status transitions + history entry)
+- GET /api/claims/export/csv — generate CSV of approved claims with the specified column format
+- PATCH /api/claims/:id for finance mark-as-paid action
+- Enforce role-based access control on all endpoints
+
+**Milestone**: Manager can approve/reject claims via API; finance can download CSV and mark claims paid
+
+### Phase 4 — Frontend: Layout, Role Switcher & Dashboard
+
+Build the vanilla JS frontend with responsive layout, role-switching, and dashboard views.
+
+- Create HTML shell with warm neutral palette (slate, teal, warm white) and responsive CSS
+- Implement role-switching dropdown in header (Alice/Bob/Carol) with data-testid
+- Build employee dashboard: list of own claims with colour-coded status badges
+- Build manager dashboard: list of team submitted claims with review actions
+- Build finance dashboard: list of approved claims with export button and mark-as-paid
+- Add data-testid attributes to all interactive elements
+
+**Milestone**: All three role dashboards render correctly with live data; role switcher toggles views
+
+### Phase 5 — Frontend: Claim Forms & Receipt Handling
+
+Build claim creation/edit form, line item management, and receipt upload/view UI.
+
+- Claim creation form: trip dates, destination, purpose, dynamic line items (add/remove rows)
+- Line item fields: category, description, amount, currency with receipt upload button
+- Receipt preview: display uploaded JPG/PNG inline, link to PDF
+- Draft editing: pre-populate form for draft claims, allow edits and resubmission
+- Manager review detail view: claim details with approve/reject buttons and comment input
+- Display rejection history on claim detail for employee
+
+**Milestone**: Full end-to-end workflow works in the browser: create → submit → review → approve → export → mark paid
+
+### Phase 6 — Polish & Verification
+
+Final responsive design pass, cross-browser testing, and acceptance criteria verification.
+
+- Verify mobile-responsive layout at common breakpoints
+- Audit all interactive elements for data-testid attributes
+- Verify all acceptance criteria pass manually
+- Verify colour-coded badges for all six statuses
+- Test edge cases: multi-currency claims, max file size rejection, invalid file types
+
+**Milestone**: All acceptance criteria verified; application ready for Playwright testing
+
+## Acceptance Criteria
+
+1. Claim submission form with trip dates, destination, purpose, and expense line items (category, description, amount, currency)
+2. Receipt upload per line item — JPG, PNG, or PDF, max 10 MB, at most one file per line item — stored on disk and viewable in the UI
+3. Claim status lifecycle: draft → submitted → under_review → approved → paid, or draft → submitted → under_review → rejected → draft (for revision)
+4. Manager review view: list of submitted claims from the same department, with ability to approve or reject each claim with a comment
+5. Finance CSV export of approved claims with specified columns: claim ID, employee name, department, trip dates, destination, purpose, total amount, currency, status, line items, receipt count, submission date, approval date, approver name, approval comment
+6. Finance can mark approved claims as paid with a single button click
+7. Dashboard: employees see their own claims with status; managers see claims from their team
+8. Role-switching dropdown (no auth) with stub users: Alice (employee), Bob (manager), Carol (finance)
+9. Department-based team grouping with manager_id foreign key on users table
+10. Draft claims are editable; submitted claims are immutable until manager acts
+11. Rejected claims return to draft status; rejection comment preserved in claim history; employee can revise and resubmit
+12. REST API: GET /api/claims, POST /api/claims, PATCH /api/claims/:id, GET /api/claims/:id/receipts, POST /api/claims/:id/receipts
+13. Currencies recorded as entered per line item with no exchange rate conversion
+14. Mobile-responsive layout
+15. Warm neutral colour palette: slate, teal, warm white
+16. All interactive elements have data-testid attributes for Playwright testing
+17. TypeScript backend with Express, vanilla JS frontend, SQLite storage, multer for uploads
+18. Standalone application running on port 3000
+19. Max upload size 10 MB per file; accept JPG, PNG, PDF only
+20. Colour-coded status badges on dashboard (draft, submitted, under_review, approved, rejected, paid)
+
+## Risks
+
+- SQLite does not support concurrent writes well — under load, simultaneous status transitions could conflict; acceptable for a single-user demo but not for production
+- Receipt files stored on local filesystem — not suitable for horizontal scaling or container restarts without persistent volume
+- No real authentication — role-switching dropdown means any user can act as any role; acceptable per PRD but not secure
+- CSV export with mixed currencies per claim: the 'total amount' column is ambiguous when line items use different currencies — may confuse finance users
+- No pagination on claim list endpoints — performance may degrade with large datasets
+- 10 MB file uploads with multer default memory storage could cause memory pressure under concurrent uploads — should use disk storage
+
+## Assumptions
+
+- Single-instance deployment only — no need for shared file storage or database replication
+- The three stub users (Alice, Bob, Carol) are pre-seeded on startup; no user registration flow is needed
+- Bob is Alice's manager (same department); Carol is in a separate finance role that can see all approved claims regardless of department
+- Claim history stores a log of status transitions with timestamps and comments, sufficient for tracking rejections and resubmissions
+- The frontend is server-rendered or a single-page vanilla JS app served by the same Express server on port 3000
+- No email notifications or external integrations are required
+- PDF receipts are linked (download) rather than rendered inline in the browser
+- The 'total amount' in CSV export sums line item amounts and appends the currency; for mixed-currency claims, line items are listed individually with their own currency
+
+## Open Questions
+
+None.
+
+## Clarification History
+
+### Clarification (Round 1)
+
+**Q:** Q-01
+**A:** Use a simplified role-switching dropdown in the UI (no login screen needed). A dropdown at the top of the page lets the user select their role: employee, manager, or finance. The selected role determines what views and actions are available. Stub users: Alice (employee), Bob (manager), Carol (finance).
+
+**Q:** Q-02
+**A:** Use a simple department/team grouping. Each user has a department field. Managers see all claims from users in the same department. Use a manager_id foreign key on the users table pointing to their direct manager.
+
+**Q:** Q-03
+**A:** A reasonable default CSV format is acceptable: claim ID, employee name, department, trip dates, destination, purpose, total amount, currency, status, line items (category, description, amount), receipt count, submission date, approval date, approver name, approval comment.
+
+**Q:** Q-04
+**A:** Paid status is a manual action by finance. Finance can mark approved claims as paid from the finance view with a single button click. No external payment integration needed.
+
+**Q:** Q-05
+**A:** Record currencies as entered without normalization. Display amounts with their original currency. In CSV export, include the original currency per line item. No exchange rate conversion needed.
+
+**Q:** Q-06
+**A:** Use 10 MB per file as the maximum receipt upload size. Accept JPG, PNG, and PDF only.
+
+**Q:** Q-07
+**A:** No hard deadline. Deliver as soon as the pipeline completes.
+
+
+---
+
+### Clarification (Round 2)
+
+**Q:** Q-08
+**A:** Employees cannot edit or withdraw a submitted claim. Once submitted, the claim is immutable until a manager acts (approve or reject). Employees can only edit claims in draft status.
+
+**Q:** Q-09
+**A:** A rejected claim can be revised and resubmitted. When a manager rejects a claim, the status returns to draft and the employee can edit and resubmit it. The rejection comment is preserved in the claim history.
+
+**Q:** Q-10
+**A:** One receipt per line item is sufficient. Keep it simple - each line item can have at most one receipt file attached.
+
+
+---
+
+### Clarification (Round 3)
+
+**Q:** Q-11
+**A:** In the CSV export total amount column, list the total as a sum only when all line items use the same currency. If multiple currencies exist on a single claim, leave the total blank and rely on per-line-item amounts with their individual currencies. Add a note in the total column indicating mixed currencies.
+
+**Q:** Q-12
+**A:** Show the claim history to the employee in the UI as a simple timeline/log. Each status transition and rejection comment should be visible to the employee so they can track progress and understand why a claim was rejected.
+"
