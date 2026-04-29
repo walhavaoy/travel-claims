@@ -1,11 +1,11 @@
 ---
-component: receipts-api
-area: backend
+component: components
+area: frontend
 coverage: 0%
 updated: 2026-04-29
 ---
 
-# receipts-api - Implementation Status
+# components - Implementation Status
 
 ## Requirements Coverage
 

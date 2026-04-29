@@ -8,34 +8,33 @@ created: 2026-04-29
 
 # Database Schema
 
-> PostgreSQL tables, constraints, indexes, and enums for the travel-claims service.
+> PostgreSQL DDL defining all tables, constraints, indexes, and enums for travel-claims.
 
 ## Purpose
 
-Define the relational schema for claims, line items, receipts, users, and audit history. All tables live in the `travel_claims` database on the shared platform PostgreSQL instance.
+Define the complete data model for the travel claims system: users, claims, line items, receipts, and audit history. The schema enforces referential integrity, proper status transitions, and provides indexes for all query patterns.
 
 ## Requirements
 
 ### Core
-- REQ-DB-01: Create `users` table with id (UUID PK), name, role (enum: employee/manager/finance), department, manager_id (self-referencing FK) [priority: must]
-- REQ-DB-02: Create `claims` table with id (UUID PK), submitter_id (FK users), trip_dates (text), destination, purpose, status (enum: draft/submitted/approved/rejected/paid), created_at, updated_at [priority: must]
-- REQ-DB-03: Create `line_items` table with id (UUID PK), claim_id (FK claims ON DELETE CASCADE), description, amount (NUMERIC 12,2), currency [priority: must]
-- REQ-DB-04: Create `receipts` table with id (UUID PK), line_item_id (FK line_items ON DELETE CASCADE), filename, content_type, size (integer), path [priority: must]
-- REQ-DB-05: Create `claim_history` table with id (UUID PK), claim_id (FK claims ON DELETE CASCADE), from_status, to_status, actor_id (FK users), comment (text), created_at [priority: must]
-- REQ-DB-06: Add indexes on claims.submitter_id, claims.status, line_items.claim_id, receipts.line_item_id, claim_history.claim_id [priority: must]
-- REQ-DB-07: Use gen_random_uuid() for all UUID defaults [priority: must]
-- REQ-DB-08: All timestamps default to NOW() and use TIMESTAMPTZ [priority: must]
+- REQ-DB-01: Create `users` table with columns: id (UUID PK), name (VARCHAR), role (VARCHAR, one of employee/manager/finance), department (VARCHAR), manager_id (UUID FK self-ref, nullable) [priority: must]
+- REQ-DB-02: Create `claims` table with columns: id (UUID PK), submitter_id (UUID FK users), trip_dates (VARCHAR), destination (VARCHAR), purpose (TEXT), status (VARCHAR default 'draft'), created_at (timestamptz), updated_at (timestamptz) [priority: must]
+- REQ-DB-03: Create `line_items` table with columns: id (UUID PK), claim_id (UUID FK claims ON DELETE CASCADE), description (TEXT), amount (NUMERIC(12,2)), currency (VARCHAR default 'USD') [priority: must]
+- REQ-DB-04: Create `receipts` table with columns: id (UUID PK), line_item_id (UUID FK line_items ON DELETE CASCADE), filename (VARCHAR), content_type (VARCHAR), size (INTEGER), path (VARCHAR) [priority: must]
+- REQ-DB-05: Create `claim_history` table with columns: id (UUID PK), claim_id (UUID FK claims ON DELETE CASCADE), from_status (VARCHAR), to_status (VARCHAR), actor_id (UUID FK users), comment (TEXT), created_at (timestamptz) [priority: must]
+- REQ-DB-06: Add indexes on all foreign key columns and claims.status [priority: must]
+- REQ-DB-07: Use gen_random_uuid() as default for all UUID primary keys [priority: must]
 
 ### Extended
-- REQ-DB-10: Add CHECK constraint on line_items.amount >= 0 [priority: should]
-- REQ-DB-11: Add CHECK constraint on receipts.size > 0 [priority: should]
+- REQ-DB-10: Add CHECK constraint on claims.status to enforce valid values (draft, submitted, approved, rejected, paid) [priority: should]
 
 ## Acceptance Criteria
-- All five tables created with correct columns, types, and constraints
-- Foreign keys enforce referential integrity
-- Indexes exist on all FK columns and status
-- UUID generation works without external extension (PG 13+)
+
+- All five tables created successfully via migration script
+- Foreign key constraints enforced (insert with invalid FK fails)
+- Indexes exist on submitter_id, claim_id, line_item_id, actor_id, status
 
 ## Dependencies
-- PostgreSQL instance at postgres.tmpclaw.svc.cluster.local
-- Database `travel_claims` must be created (migration handles tables)
+
+- PostgreSQL 15+ with pgcrypto or gen_random_uuid() support
+- DATABASE_URL environment variable

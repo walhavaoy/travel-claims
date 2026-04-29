@@ -8,36 +8,37 @@ created: 2026-04-29
 
 # Claim Detail
 
-> View claim details, upload receipts, and perform role-appropriate actions at /claims/:id.
+> View claim details with receipts, history, and role-appropriate actions.
 
 ## Purpose
 
-Detailed view of a single claim showing line items, uploaded receipts, full status history, and action buttons appropriate to the user's role and the claim's current status.
+Detail page at /claims/:id showing full claim information, line items with receipt management, transition history timeline, and action buttons appropriate to the user's role and the claim's current status.
 
 ## Requirements
 
 ### Core
-- REQ-CD-01: Display claim header: destination, purpose, trip_dates, status badge, total amount [priority: must]
-- REQ-CD-02: Display line items table with description, amount, currency [priority: must]
-- REQ-CD-03: Display receipts per line item with download links [priority: must]
-- REQ-CD-04: Upload receipt button (per line item) — multipart upload via POST /api/claims/:id/receipts [priority: must]
-- REQ-CD-05: Display claim_history as timeline with status transitions, actor, comment, timestamp [priority: must]
-- REQ-CD-06: Employee actions: Submit (draft), Edit (draft), Delete (draft) [priority: must]
-- REQ-CD-07: Manager actions: Approve (submitted), Reject with comment (submitted) [priority: must]
-- REQ-CD-08: Finance actions: Mark as Paid (approved) [priority: must]
-- REQ-CD-09: All interactive elements have data-testid with travelclaims- prefix [priority: must]
+- REQ-CD-01: Display claim header: destination, purpose, trip dates, status badge, total amount [priority: must]
+- REQ-CD-02: Line items table with receipt upload buttons per line item [priority: must]
+- REQ-CD-03: Receipt upload via file picker (multipart POST to /api/claims/:id/receipts) [priority: must]
+- REQ-CD-04: History timeline showing all status transitions with actor, comment, timestamp [priority: must]
+- REQ-CD-05: Employee actions: edit (draft), submit (draft->submitted), delete (draft) [priority: must]
+- REQ-CD-06: Manager actions: approve/reject (submitted) with comment input [priority: must]
+- REQ-CD-07: Finance actions: mark-paid (approved) [priority: must]
+- REQ-CD-08: All interactive elements have data-testid="travelclaims-..." attributes [priority: must]
 
 ### Extended
-- REQ-CD-10: Approve/reject shows confirmation dialog with optional comment [priority: should]
-- REQ-CD-11: Receipt thumbnails for images [priority: could]
+- REQ-CD-10: Receipt preview/thumbnail for images [priority: could]
+- REQ-CD-11: Download receipt link with correct filename [priority: should]
 
 ## Acceptance Criteria
-- Claim detail shows all fields, line items, receipts, and history
-- Receipts download with correct content type
-- Status transitions work from the UI (submit, approve, reject, mark-paid)
-- History updates after each action
+
+- Clicking a claim from dashboard shows full detail with line items
+- Receipt upload works and shows attachment indicator
+- History section shows all transitions with comments
+- Actions only appear for the appropriate role and status
 
 ## Dependencies
-- backend/claims-api (GET/PATCH /api/claims/:id)
+
+- frontend/components (badges, buttons, modals)
+- backend/claims-api (GET /api/claims/:id)
 - backend/receipts-api (POST/GET receipts)
-- frontend/shared (status badges, layout)

@@ -4,23 +4,22 @@ status: planned
 created: 2026-04-29
 ---
 
-# Frontend
+# Frontend Area
 
-> Vanilla JS + HTML frontend served from /public. No build step required.
+> Vanilla JS + HTML frontend served from /public. No build step, no framework.
 
 ## Components
 
-| Component | Priority | Description |
-|-----------|----------|-------------|
-| dashboard | P1 | Role-appropriate claim listing at / |
-| claim-form | P1 | Create/edit claim at /claims/new |
-| claim-detail | P1 | Claim detail at /claims/:id with actions |
-| shared | P2 | Status badges, layout, responsive CSS |
+| Component | Description | Priority |
+|-----------|-------------|----------|
+| dashboard | Role-appropriate landing page: employee sees own claims, manager sees team, finance sees approved | P1 |
+| claim-form | Create/edit claim form with dynamic line items, trip dates, destination, purpose | P1 |
+| claim-detail | Claim detail view with receipts, history timeline, role-appropriate action buttons | P1 |
+| components | Shared UI: status badges, buttons, layout, navigation, mobile-responsive styles | P1 |
 
-## Design Decisions
-- Single-page app with client-side routing (hash or pushState)
-- No build step — plain JS files in /public
-- All interactive elements have data-testid with `travelclaims-` prefix
+## Conventions
+
+- All interactive elements use `data-testid="travelclaims-{element}-{name}"` attributes
+- Color-coded status badges: draft=gray, submitted=yellow, approved=green, rejected=red, paid=blue
 - Mobile-responsive layout
-- Color-coded status badges (draft=gray, submitted=blue, approved=green, rejected=red, paid=purple)
-- Fetch API for all backend calls
+- Client-side routing via history API or hash-based navigation

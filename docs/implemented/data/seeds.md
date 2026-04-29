@@ -1,11 +1,11 @@
 ---
-component: receipts-api
-area: backend
+component: seeds
+area: data
 coverage: 0%
 updated: 2026-04-29
 ---
 
-# receipts-api - Implementation Status
+# seeds - Implementation Status
 
 ## Requirements Coverage
 

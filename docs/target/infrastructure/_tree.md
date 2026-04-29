@@ -4,22 +4,20 @@ status: planned
 created: 2026-04-29
 ---
 
-# Infrastructure
+# Infrastructure Area
 
-> Docker build, Helm chart, and deployment configuration.
+> Container build, Helm chart, and Kubernetes deployment configuration.
 
 ## Components
 
-| Component | Priority | Description |
-|-----------|----------|-------------|
-| dockerfile | P0 | Multi-stage build, non-root UID 1001 |
-| helm-chart | P0 | Deployment + Service + PVC in realm namespace |
-| config | P0 | Environment variables and runtime configuration |
+| Component | Description | Priority |
+|-----------|-------------|----------|
+| dockerfile | Multi-stage Node.js 22 build, runs as UID 1001 non-root, serves on PORT 3000 | P1 |
+| helm-chart | Deployment + Service named `product` on port 3000 in realm namespace, PVC for receipts | P1 |
 
-## Deployment Target
-- Namespace: project-travel-claims-e4e54fca
-- Service name: product
-- Port: 3000
-- Domain: claims.tmpclaw.io
-- Database: travel_claims on postgres.tmpclaw.svc.cluster.local
-- Receipt storage: PVC mounted at /data/receipts
+## Platform Integration
+
+- Namespace: `project-travel-claims-e4e54fca`
+- Domain: `claims.tmpclaw.io`
+- PostgreSQL: `postgres.tmpclaw.svc.cluster.local` with database `travel_claims`
+- Receipt storage: PVC mounted at `/data/receipts`

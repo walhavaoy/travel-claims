@@ -6,37 +6,38 @@ status: planned
 created: 2026-04-29
 ---
 
-# Express Server
+# Server Setup
 
-> Main application entry point: Express server with middleware stack, static file serving, and health check.
+> Express application scaffold: middleware stack, PostgreSQL connection pool, static file serving, health check, and graceful shutdown.
 
 ## Purpose
 
-Single Express process that serves both the REST API and the vanilla JS frontend. Runs on PORT (default 3000). Handles graceful shutdown.
+Single entry point (src/index.ts) that wires together Express, the pg Pool, all API routes, static file serving from /public, and handles process lifecycle.
 
 ## Requirements
 
 ### Core
-- REQ-SV-01: Express server listening on PORT env var (default 3000) [priority: must]
-- REQ-SV-02: Serve static files from /public directory for the frontend [priority: must]
-- REQ-SV-03: GET /healthz returns 200 with { status: "ok" } [priority: must]
-- REQ-SV-04: JSON body parser middleware for API routes [priority: must]
-- REQ-SV-05: Pino HTTP request logging middleware [priority: must]
-- REQ-SV-06: Run database migrations before accepting connections [priority: must]
-- REQ-SV-07: Graceful shutdown on SIGTERM/SIGINT [priority: must]
-- REQ-SV-08: SPA fallback — serve index.html for non-API, non-static routes [priority: must]
+- REQ-SV-01: Express app listening on PORT env var (default 3000) [priority: must]
+- REQ-SV-02: PostgreSQL connection pool via `pg.Pool` using DATABASE_URL env var [priority: must]
+- REQ-SV-03: Run schema migration and seed on startup (ensure tables exist) [priority: must]
+- REQ-SV-04: Serve static files from /public directory for the frontend [priority: must]
+- REQ-SV-05: GET /healthz endpoint returning { status: "ok" } [priority: must]
+- REQ-SV-06: Graceful shutdown on SIGTERM/SIGINT (close pool, stop server) [priority: must]
+- REQ-SV-07: Use pino for all logging (never console.log) [priority: must]
+- REQ-SV-08: JSON body parser middleware for API routes [priority: must]
+- REQ-SV-09: SPA fallback: serve index.html for non-API, non-static routes [priority: must]
 
 ### Extended
-- REQ-SV-10: Request ID middleware (X-Request-Id header) [priority: should]
+- REQ-SV-10: Request logging middleware with pino-http [priority: should]
+- REQ-SV-11: CORS headers for development (configurable via CORS_ORIGIN env) [priority: could]
 
 ## Acceptance Criteria
-- Server starts and accepts HTTP requests on configured port
-- Static files served with correct MIME types
-- Health check responds to /healthz
-- API routes and static routes coexist without conflicts
-- Server shuts down gracefully (drains connections)
+
+- `curl http://localhost:3000/healthz` returns 200 with JSON body
+- Static files in /public are served with correct MIME types
+- Application starts, connects to PostgreSQL, runs migrations, and is ready to serve
 
 ## Dependencies
-- data/migrations (must complete before listening)
-- backend/auth (middleware in stack)
-- infrastructure/config (PORT, DATABASE_URL env vars)
+
+- express, pg, pino, multer (npm packages)
+- PostgreSQL instance accessible via DATABASE_URL
