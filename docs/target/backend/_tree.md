@@ -1,26 +1,20 @@
 ---
 area: backend
 status: planned
-created: 2026-04-29
+created: 2026-04-30
 ---
 
 # Backend Area
 
-> Express REST API handling authentication, claims CRUD, receipt uploads, and CSV export.
+> Express + TypeScript API server serving REST endpoints and static files.
 
 ## Components
 
-| Component | Description | Priority |
-|-----------|-------------|----------|
-| server | Express app setup, middleware stack, DB pool, static file serving, health check | P0 |
-| auth | Keycloak forward-auth via X-Forwarded-User header, role resolution, user lookup | P0 |
-| claims-api | CRUD endpoints for claims: list, get, create, update/transition, delete | P0 |
-| receipts-api | Multipart upload via Multer, download with correct content-type, file validation | P0 |
-| export | GET /api/claims/export/csv - finance-only CSV export of approved/paid claims | P1 |
-
-## Shared Patterns
-
-- All endpoints return JSON with consistent error shape: `{ error: string }`
-- Status transitions use `SELECT ... FOR UPDATE` within a transaction
-- pino logger on all request handlers
-- Request validation before DB access
+| Component | Priority | Description |
+|-----------|----------|-------------|
+| server | P0 | Express app bootstrap, config, health check, static serving |
+| auth | P0 | X-Forwarded-User middleware, user lookup, role resolution |
+| claims-api | P0 | CRUD routes for claims with role-filtered listing |
+| receipts | P0 | Multer upload, receipt download with correct content-type |
+| export | P0 | CSV export of approved/paid claims for finance role |
+| status-machine | P0 | Status transition logic with FOR UPDATE locks |

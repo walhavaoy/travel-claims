@@ -3,37 +3,39 @@ component: claim-form
 area: frontend
 priority: P1
 status: planned
-created: 2026-04-29
+created: 2026-04-30
 ---
 
 # Claim Form
 
-> Create and edit claim form with dynamic line items.
+> Create and edit claims with trip details and dynamic line items.
 
 ## Purpose
 
-Form at /claims/new allowing employees to create new expense claims with trip details and multiple line items. Also supports editing draft claims.
+Form UI for employees to create new travel claims with trip dates, destination, purpose, and one or more line items with amounts.
 
 ## Requirements
 
 ### Core
-- REQ-CF-01: Form fields: trip dates (start/end), destination, purpose [priority: must]
-- REQ-CF-02: Dynamic line items section: add/remove line items with description, amount, currency fields [priority: must]
-- REQ-CF-03: Client-side validation: required fields, positive amounts [priority: must]
-- REQ-CF-04: Submit creates draft claim via POST /api/claims [priority: must]
-- REQ-CF-05: After creation, navigate to claim detail view [priority: must]
-- REQ-CF-06: All interactive elements have data-testid="travelclaims-..." attributes [priority: must]
+- REQ-CF-01: Form fields: trip_start_date, trip_end_date, destination, purpose [priority: must]
+- REQ-CF-02: Dynamic line items: add/remove rows with description, amount, currency [priority: must]
+- REQ-CF-03: Validate trip_end_date >= trip_start_date before submit [priority: must]
+- REQ-CF-04: At least one line item required [priority: must]
+- REQ-CF-05: Submit creates draft via POST /api/claims [priority: must]
+- REQ-CF-06: Navigate to claim detail on successful creation [priority: must]
+- REQ-CF-07: Display validation errors inline [priority: must]
+- REQ-CF-08: data-testid attributes on all form elements with travelclaims- prefix [priority: must]
 
 ### Extended
-- REQ-CF-10: Edit mode for draft claims (pre-populate form, PATCH on save) [priority: should]
+- REQ-CF-10: Pre-populate currency from user preference or default USD [priority: should]
 
 ## Acceptance Criteria
 
-- Employee can fill form, add 2 line items, submit to create draft
-- Validation prevents empty required fields
-- After submit, user sees the new claim detail
+- User can add 2 line items and submit, sees new claim in detail view
+- Validation error shown if end date before start date
+- Validation error shown if no line items
 
 ## Dependencies
 
-- frontend/components (form inputs, buttons)
 - backend/claims-api (POST /api/claims)
+- frontend/shell (router, navigation)

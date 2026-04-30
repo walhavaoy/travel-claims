@@ -3,39 +3,39 @@ component: dashboard
 area: frontend
 priority: P1
 status: planned
-created: 2026-04-29
+created: 2026-04-30
 ---
 
 # Dashboard
 
-> Role-appropriate landing page showing relevant claims list.
+> Role-based landing page showing claims relevant to the current user.
 
 ## Purpose
 
-The root page (/) that displays different views based on the logged-in user's role: employees see their own claims, managers see their team's submitted claims, and finance staff see all approved claims ready for payment.
+Display a filtered list of claims appropriate for the user's role. Employees see their own claims, managers see their team's submissions, and finance sees approved claims.
 
 ## Requirements
 
 ### Core
-- REQ-FE-01: Employee dashboard shows own claims with status filter tabs [priority: must]
-- REQ-FE-02: Manager dashboard shows team claims (direct reports) defaulting to submitted filter [priority: must]
-- REQ-FE-03: Finance dashboard shows approved claims with mark-paid action available [priority: must]
-- REQ-FE-04: Summary cards showing counts by status and total amounts [priority: must]
-- REQ-FE-05: Claims table with columns: title/destination, status badge, amount, date [priority: must]
-- REQ-FE-06: Click on a claim row navigates to claim detail view [priority: must]
+- REQ-DB-01: Employee dashboard: list own claims with status, amount, dates [priority: must]
+- REQ-DB-02: Manager dashboard: list team (direct reports) claims pending review [priority: must]
+- REQ-DB-03: Finance dashboard: list approved claims ready for payment [priority: must]
+- REQ-DB-04: Summary statistics (total claims, by status, total amount) [priority: must]
+- REQ-DB-05: Click-through to claim detail [priority: must]
+- REQ-DB-06: Status filter tabs [priority: must]
+- REQ-DB-07: "New Claim" button for employees [priority: must]
 
 ### Extended
-- REQ-FE-10: Search/filter by text across claim fields [priority: should]
-- REQ-FE-11: Sortable table columns [priority: should]
+- REQ-DB-10: Search/filter by text [priority: should]
 
 ## Acceptance Criteria
 
-- Alice sees only her own claims on /
-- Bob sees his direct reports' claims on /
-- Carol sees all approved/paid claims on /
-- Status filter tabs update the displayed list
+- Alice sees only her own claims
+- Bob sees claims from his direct reports (Alice)
+- Carol sees approved/paid claims from all users
+- Clicking a claim row navigates to detail view
 
 ## Dependencies
 
-- frontend/components (badges, buttons, layout)
-- backend/claims-api (GET /api/claims)
+- backend/claims-api (GET /api/claims with role filtering)
+- frontend/shell (router, styles)

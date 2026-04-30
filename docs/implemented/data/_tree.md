@@ -1,9 +1,17 @@
 ---
 area: data
+status: implemented
 coverage: 0%
-updated: 2026-04-29
+created: 2026-04-30
 ---
 
-# data - Implementation Status
+# Data Area
 
-No components implemented yet.
+> PostgreSQL schema, migrations, and seed data for travel-claims.
+
+## Components
+
+| Component | Priority | Description |
+|-----------|----------|-------------|
+| schema | P0 | Table definitions, indexes, constraints |
+| migrations | P0 | Startup migration runner against DATABASE_URL |

@@ -3,44 +3,45 @@ component: claims-api
 area: backend
 priority: P0
 status: planned
-created: 2026-04-29
+created: 2026-04-30
 ---
 
 # Claims API
 
-> REST endpoints for claims CRUD and status transitions.
+> REST endpoints for claim CRUD and role-filtered listing.
 
 ## Purpose
 
-Implement the core business logic for creating, listing, viewing, updating, and deleting travel expense claims. Enforce the status state machine (draft -> submitted -> approved -> paid, with rejected branch) and role-based access control.
+Implement the core claims REST API supporting create, read, update, delete, and status transitions with role-based access control.
 
 ## Requirements
 
 ### Core
-- REQ-CL-01: GET /api/claims - role-filtered list: employee sees own, manager sees team (direct reports), finance sees all approved+paid [priority: must]
-- REQ-CL-02: GET /api/claims/:id - single claim with line_items and history included [priority: must]
-- REQ-CL-03: POST /api/claims - create claim in draft status with line items, return full claim object [priority: must]
-- REQ-CL-04: PATCH /api/claims/:id - support actions: submit (draft->submitted), approve (submitted->approved), reject (submitted->rejected), mark-paid (approved->paid), and field edits on draft claims [priority: must]
-- REQ-CL-05: DELETE /api/claims/:id - only allowed for draft claims by the submitter [priority: must]
-- REQ-CL-06: Status transitions must use SELECT ... FOR UPDATE within a transaction to prevent TOCTOU races [priority: must]
-- REQ-CL-07: Every status transition creates a claim_history record with actor_id, from_status, to_status, and optional comment [priority: must]
-- REQ-CL-08: Recalculate total_amount from line items on create/update [priority: must]
-- REQ-CL-09: Only the submitter can submit (draft->submitted), only a manager can approve/reject, only finance can mark-paid [priority: must]
+- REQ-CL-01: GET /api/claims — role-filtered list: employee sees own claims, manager sees direct reports' claims, finance sees approved+paid claims [priority: must]
+- REQ-CL-02: GET /api/claims/:id — single claim with line_items and history included [priority: must]
+- REQ-CL-03: POST /api/claims — create draft claim with line items in a single transaction [priority: must]
+- REQ-CL-04: PATCH /api/claims/:id — edit draft fields, or trigger status transitions (submit/approve/reject/mark-paid) [priority: must]
+- REQ-CL-05: DELETE /api/claims/:id — delete drafts only, return 403 for non-draft claims [priority: must]
+- REQ-CL-06: Status transitions use SELECT ... FOR UPDATE to prevent TOCTOU races [priority: must]
+- REQ-CL-07: Valid transitions: draft→submitted (by submitter), submitted→approved (by manager), submitted→rejected (by manager), approved→paid (by finance) [priority: must]
+- REQ-CL-08: Manager can only act on claims where submitter.manager_id == manager.id (direct reports only) [priority: must]
+- REQ-CL-09: Each status transition creates a claim_history record with actor, from/to status, and optional comment [priority: must]
+- REQ-CL-10: Validate trip_end_date >= trip_start_date on create/edit [priority: must]
+- REQ-CL-11: total_amount computed as SUM of line_items.amount (not stored, or computed+stored) [priority: must]
 
 ### Extended
-- REQ-CL-10: Pagination support (limit/offset query params) on GET /api/claims [priority: should]
-- REQ-CL-11: Manager can only approve/reject claims from their direct reports [priority: should]
+- REQ-CL-20: Pagination support for GET /api/claims [priority: could]
 
 ## Acceptance Criteria
 
-- Employee Alice can create a draft claim with 2 line items
-- Alice can submit the draft (status changes to submitted, history recorded)
-- Manager Bob can list Alice's claims, approve one with comment, reject another
-- Finance Carol can list approved claims and mark one as paid
-- Attempting to approve a draft claim returns 400
-- Concurrent PATCH requests on same claim don't cause inconsistent state
+- Alice can create a draft claim with 2 line items, then submit it
+- Bob can list Alice's claims, approve one, reject another with comment
+- Carol cannot see draft/submitted claims, only approved/paid
+- Deleting a submitted claim returns 403
+- Concurrent approval attempts do not create inconsistent state
 
 ## Dependencies
 
-- backend/auth (req.user must be populated)
-- data/schema (all tables must exist)
+- backend/auth (user context on request)
+- backend/status-machine (transition validation)
+- data/schema (all tables)

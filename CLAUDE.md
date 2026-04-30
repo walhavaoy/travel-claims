@@ -1,103 +1,129 @@
 # Travel Claims & Receipts (claims.tmpclaw.io)
 
-Standalone web application for travel expense claim submission, manager approval, and finance payment tracking.
+Standalone web application for travel expense claim and receipt management.
+
+## Project Overview
+
+Employees submit travel expense claims with line items and receipt attachments. Managers review and approve/reject claims from their direct reports. Finance staff mark approved claims as paid and export CSV reports.
+
+**Realm:** travel-claims-e4e54fca
+**Domain:** claims.tmpclaw.io
+**Namespace:** project-travel-claims-e4e54fca
 
 ## Tech Stack
 
 - **Runtime:** Node.js 22
-- **Framework:** Express 4.x
-- **Language:** TypeScript (strict mode, ESM)
-- **Database:** PostgreSQL via `pg` (connection pooling)
+- **Framework:** Express
+- **Language:** TypeScript (strict mode)
+- **Database:** PostgreSQL via `pg` (DATABASE_URL env, shared platform postgres)
+- **Frontend:** Vanilla JS + HTML served from /public (no build step)
 - **File uploads:** Multer (5MB limit, JPEG/PNG/PDF only)
 - **Logging:** pino (never console.log)
-- **Frontend:** Vanilla JS + HTML served from /public (no build step)
-- **Container:** Multi-stage Dockerfile, UID 1001 non-root
-- **Deployment:** Helm chart in `chart/` directory
+- **Container:** Multi-stage Dockerfile, node:22-slim, UID 1001
+- **Deploy:** Helm chart → Deployment + Service named "product" on port 3000
 
-## Directory Structure (Target)
+## Directory Structure
 
 ```
-travel-claims/
-  src/
-    index.ts              # Express app entry point
-    config.ts             # Environment config (PORT, DATABASE_URL, etc.)
-    db/
-      pool.ts             # pg Pool setup
-      migrate.ts          # Schema migration (DDL)
-      seed.ts             # Stub user inserts
-    middleware/
-      auth.ts             # X-Forwarded-User forward-auth
-    routes/
-      claims.ts           # /api/claims CRUD + transitions
-      receipts.ts         # /api/claims/:id/receipts upload/download
-      export.ts           # /api/claims/export/csv
-    types.ts              # Shared TypeScript interfaces
-  public/
-    index.html            # SPA shell
-    css/
-      styles.css          # Global styles
-    js/
-      app.js              # Router and page controller
-      dashboard.js        # Dashboard view
-      claim-form.js       # Create/edit form
-      claim-detail.js     # Detail + receipts + history
-      components.js       # Shared UI components
-  chart/
-    Chart.yaml
-    values.yaml
-    templates/
-      deployment.yaml
-      service.yaml
-      pvc.yaml
-  Dockerfile
-  tsconfig.json
-  package.json
+/
+├── src/
+│   ├── index.ts              # Express app entry point
+│   ├── config.ts             # Environment config
+│   ├── db/
+│   │   ├��─ pool.ts           # pg Pool from DATABASE_URL
+│   │   └── migrate.ts        # Startup migration runner
+│   ├── middleware/
+│   │   ├── auth.ts           # X-Forwarded-User → user context
+│   │   └── error.ts          # Global error handler
+│   ├── routes/
+│   │   ├── claims.ts         # Claims CRUD + status transitions
+│   │   ├── receipts.ts       # Receipt upload/download
+│   │   └── export.ts         # CSV export (finance only)
+│   ├── services/
+│   │   └── status-machine.ts # Status transition rules + FOR UPDATE
+│   └── types.ts              # Shared TypeScript interfaces
+├── migrations/
+│   └── 001_initial.sql       # Schema + seed data
+├── public/                   # Static frontend (vanilla JS)
+│   ├── index.html
+│   ├── app.js
+│   └── style.css
+├── chart/                    # Helm chart
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/
+│       ├── deployment.yaml
+│       └── service.yaml
+├── Dockerfile
+├── package.json
+├── tsconfig.json
+└── CLAUDE.md
 ```
 
-## Commands
+## Build / Run / Test
 
 ```bash
 npm install              # Install dependencies
-npm run build            # TypeScript compile (tsc)
-npm run dev              # Development with tsx watch
-npm start                # Production (node dist/index.js)
-npm test                 # Run tests (vitest)
+npm run build            # TypeScript → dist/
+npm run dev              # Dev server with tsx watch
+npm start                # Production: node dist/index.js
+npm test                 # Run tests (if present)
 ```
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| PORT | 3000 | HTTP listen port |
-| DATABASE_URL | (required) | PostgreSQL connection string |
-| TRUST_FORWARD_AUTH | true | Trust X-Forwarded-User header |
-| UPLOAD_DIR | /data/receipts | Receipt file storage path |
-| NODE_ENV | production | Runtime environment |
-
-## Code Conventions
-
-- **Logging:** Always use pino (`import logger from './logger'`). Never console.log.
-- **Error responses:** `{ error: string }` with appropriate HTTP status.
-- **data-testid:** All interactive elements use prefix `travelclaims-` (e.g., `travelclaims-button-submit`).
-- **SQL:** Parameterized queries only ($1, $2...). Never string concatenation.
-- **Transactions:** Status transitions must use `BEGIN` + `SELECT ... FOR UPDATE` + `COMMIT`.
-- **Types:** Define interfaces in types.ts. Avoid `any`.
-- **Naming:** camelCase for TS, snake_case for DB columns, kebab-case for CSS classes.
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| PORT | No | 3000 | HTTP listen port |
+| DATABASE_URL | Yes | - | PostgreSQL connection string |
+| TRUST_FORWARD_AUTH | No | true | Trust X-Forwarded-User header |
+| UPLOAD_DIR | No | /data/receipts | Receipt file storage path |
 
 ## Key Design Decisions
 
-1. **Single container:** API + static frontend in one Express server (no nginx sidecar).
-2. **Forward auth only:** No login forms. Identity comes from X-Forwarded-User header.
-3. **Stub users:** Alice (employee), Bob (manager), Carol (finance) with hardcoded UUIDs.
-4. **No ORM:** Direct pg queries for simplicity and control over transactions.
-5. **Vanilla JS frontend:** No build step, no bundler. JS files served directly from /public.
-6. **Status machine:** draft -> submitted -> approved -> paid (+ rejected branch). Enforced in API with row-level locking.
+1. **Single container:** API + static frontend in one Express server. No separate frontend build or container.
+2. **Startup migrations:** Schema applied on boot via simple SQL file runner. No CREATE DATABASE — platform provisions the DB.
+3. **Forward-auth only:** No login forms. Identity from X-Forwarded-User header, looked up in users table.
+4. **FOR UPDATE locks:** All status transitions acquire a row lock before checking current status, preventing TOCTOU races.
+5. **Flat hierarchy:** Manager sees only direct reports (manager_id == self). No recursive/transitive chains.
+6. **PVC-backed uploads:** Receipt files stored on disk at UPLOAD_DIR, backed by a PVC in Kubernetes.
 
-## Archived Source Reference
+## Data Model
 
-The `src/claims-manager/` and `src/claims-ui/` directories contain the original MFE plugin code from the tmpclaw platform. Use as reference for:
-- Data model and API patterns (`claims-ui/public/ui/claims.js`)
-- Status badge styling and UI patterns
-- Existing test IDs and conventions
+### Status Flow
+```
+draft → submitted → approved → paid
+                  ↘ rejected
+```
 
-Do NOT copy directly. The new app is a standalone Express server, not an MFE plugin.
+### Stub Users
+| Name | Role | Department | Manager | UUID |
+|------|------|------------|---------|------|
+| Alice | employee | engineering | Bob | a11c0000-0000-4000-8000-000000000002 |
+| Bob | manager | engineering | (none) | b0b00000-0000-4000-8000-000000000001 |
+| Carol | finance | finance | (none) | ca201000-0000-4000-8000-000000000003 |
+
+## Code Conventions
+
+- Use `pino` for all logging — never `console.log`
+- TypeScript strict mode, no `any` unless truly unavoidable
+- `data-testid` attributes on all interactive UI elements, prefix: `travelclaims-`
+- Error responses: `{ error: "message" }` with appropriate HTTP status
+- SQL parameterized queries only — never string interpolation
+- UUIDs for all primary keys (gen_random_uuid())
+
+## API Routes
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | /healthz | No | Health check |
+| GET | /api/me | Yes | Current user info |
+| GET | /api/claims | Yes | Role-filtered claim list |
+| GET | /api/claims/:id | Yes | Claim detail with line_items + history |
+| POST | /api/claims | Yes | Create draft claim |
+| PATCH | /api/claims/:id | Yes | Edit or transition status |
+| DELETE | /api/claims/:id | Yes | Delete draft claim |
+| POST | /api/claims/:id/receipts | Yes | Upload receipt for line item |
+| GET | /api/claims/:id/receipts | Yes | List receipts for claim |
+| GET | /api/receipts/:id/download | Yes | Download receipt file |
+| GET | /api/claims/export/csv | Yes | CSV export (finance only) |

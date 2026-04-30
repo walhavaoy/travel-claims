@@ -1,13 +1,13 @@
 ---
-component: schema
-area: data
+component: shell
+area: frontend
 priority: P0
 status: not-started
 coverage: 0%
 created: 2026-04-30
 ---
 
-# schema (Implementation Status)
+# shell (Implementation Status)
 
 > No requirements implemented yet.
 

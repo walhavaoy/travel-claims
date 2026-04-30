@@ -1,14 +1,18 @@
 ---
 component: export
 area: backend
+priority: P0
+status: not-started
 coverage: 0%
-updated: 2026-04-29
+created: 2026-04-30
 ---
 
-# export - Implementation Status
+# export (Implementation Status)
 
-## Requirements Coverage
+> No requirements implemented yet.
 
-| Requirement | Status | Notes |
-|-------------|--------|-------|
-| (none yet)  | -      | -     |
+## Requirement Status
+
+| Requirement | Status |
+|-------------|--------|
+| (none) | - |

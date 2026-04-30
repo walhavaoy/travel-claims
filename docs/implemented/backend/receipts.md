@@ -1,13 +1,13 @@
 ---
-component: schema
-area: data
+component: receipts
+area: backend
 priority: P0
 status: not-started
 coverage: 0%
 created: 2026-04-30
 ---
 
-# schema (Implementation Status)
+# receipts (Implementation Status)
 
 > No requirements implemented yet.
 
