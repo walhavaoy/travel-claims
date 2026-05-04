@@ -3,39 +3,40 @@ component: helm-chart
 area: infrastructure
 priority: P1
 status: planned
-created: 2026-04-29
+created: 2026-05-04
 ---
 
 # Helm Chart
 
-> Kubernetes deployment manifests for the travel-claims application.
+> Kubernetes Deployment + Service for the travel-claims application.
 
 ## Purpose
 
-Deploy the travel-claims container as a Kubernetes Deployment + Service in the realm namespace, with proper configuration for the platform PostgreSQL, receipt PVC, and ingress.
+Deploy the travel-claims container into the realm namespace with proper resource configuration, secrets injection, and PVC mount.
 
 ## Requirements
 
 ### Core
-- REQ-HM-01: Deployment named `product` with container port 3000 [priority: must]
-- REQ-HM-02: Service named `product` exposing port 3000 [priority: must]
-- REQ-HM-03: Deploy to namespace `project-travel-claims-e4e54fca` [priority: must]
-- REQ-HM-04: DATABASE_URL env var pointing to postgres.tmpclaw.svc.cluster.local/travel_claims [priority: must]
-- REQ-HM-05: TRUST_FORWARD_AUTH=true env var [priority: must]
-- REQ-HM-06: PVC for /data/receipts mount [priority: must]
-- REQ-HM-07: Readiness probe on /healthz [priority: must]
-- REQ-HM-08: Security context: runAsUser 1001, runAsNonRoot true [priority: must]
+- REQ-HC-01: Deployment named "product" with single replica [priority: must]
+- REQ-HC-02: Service named "product" on port 3000 [priority: must]
+- REQ-HC-03: envFrom referencing platform database secret (DATABASE_URL) [priority: must]
+- REQ-HC-04: PVC for /data/receipts (256Mi default) [priority: must]
+- REQ-HC-05: Health check: livenessProbe and readinessProbe on /healthz [priority: must]
+- REQ-HC-06: Resource limits (256Mi memory, 250m CPU) [priority: must]
+- REQ-HC-07: SecurityContext: runAsUser 1001, runAsNonRoot true [priority: must]
 
 ### Extended
-- REQ-HM-10: Resource requests/limits (CPU: 100m/500m, Memory: 128Mi/512Mi) [priority: should]
-- REQ-HM-11: Pod disruption budget [priority: could]
+- REQ-HC-10: Configurable replica count via values.yaml [priority: should]
+- REQ-HC-11: PVC size configurable [priority: should]
 
 ## Acceptance Criteria
 
-- `helm template` renders valid YAML
-- Deployment has correct env vars, probes, and security context
-- Service targets port 3000
+- helm template renders valid K8s manifests
+- Deployment references correct image and port
+- Secret envFrom injects DATABASE_URL
+- PVC mounted at /data/receipts
 
 ## Dependencies
 
-- infrastructure/dockerfile (container image must be built)
+- REQ-IN-01 (container image exists)
+- Platform provisions database secret

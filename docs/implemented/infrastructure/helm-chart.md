@@ -1,14 +1,15 @@
 ---
-component: helm-chart
-area: infrastructure
 coverage: 0%
-updated: 2026-04-29
+status: not-started
+created: 2026-05-04
 ---
 
-# helm-chart - Implementation Status
+# helm-chart — Implementation Status
 
-## Requirements Coverage
+> No implementation yet.
+
+## Requirements Status
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| (none yet)  | -      | -     |
+| (all) | not started | — |

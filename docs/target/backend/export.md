@@ -1,38 +1,37 @@
 ---
 component: export
 area: backend
-priority: P0
+priority: P1
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
 # CSV Export
 
-> Finance-only CSV export of approved and paid claims.
+> Finance-only CSV export of approved/paid claims.
 
 ## Purpose
 
-Provide a CSV download endpoint for finance users to export claim data for accounting systems.
+Allow finance staff to export claim data for external accounting systems.
 
 ## Requirements
 
 ### Core
-- REQ-EX-01: GET /api/claims/export/csv — returns CSV file download [priority: must]
-- REQ-EX-02: Finance role only — return 403 for non-finance users [priority: must]
-- REQ-EX-03: Include approved and paid claims with all relevant fields [priority: must]
-- REQ-EX-04: Set Content-Type: text/csv and Content-Disposition: attachment [priority: must]
-- REQ-EX-05: Include claim fields: id, submitter name, destination, purpose, trip dates, status, total amount, currency [priority: must]
+- REQ-EX-01: GET /api/claims/export/csv — returns CSV file [priority: must]
+- REQ-EX-02: Only accessible by finance role [priority: must]
+- REQ-EX-03: Include claim fields: id, submitter name, destination, purpose, dates, total amount, status, paid_at [priority: must]
+- REQ-EX-04: Set Content-Type: text/csv and Content-Disposition: attachment header [priority: must]
 
 ### Extended
-- REQ-EX-10: Optional date range filter query params [priority: could]
+- REQ-EX-10: Date range filter query params (from, to) [priority: should]
 
 ## Acceptance Criteria
 
-- Finance Carol can download CSV with approved/paid claims
-- Employee Alice gets 403 on the export endpoint
-- CSV has proper headers and escaped values
+- Carol (finance) downloads CSV with correct headers
+- Bob (manager) gets 403 on export endpoint
+- CSV contains all approved and paid claims
 
 ## Dependencies
 
-- backend/auth (role check)
-- data/schema (claims + users join)
+- REQ-AU-06 (role guard)
+- REQ-CL-01 (claims query logic)

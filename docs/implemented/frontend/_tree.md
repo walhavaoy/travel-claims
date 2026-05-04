@@ -1,19 +1,15 @@
 ---
-area: frontend
-status: implemented
 coverage: 0%
-created: 2026-04-30
+status: not-started
+created: 2026-05-04
 ---
 
-# Frontend Area
+# _tree — Implementation Status
 
-> Vanilla JS + HTML UI served from /public, no build step.
+> No implementation yet.
 
-## Components
+## Requirements Status
 
-| Component | Priority | Description |
-|-----------|----------|-------------|
-| shell | P1 | HTML shell, client-side router, shared styles |
-| dashboard | P1 | Role-based landing page (own / team / approved claims) |
-| claim-form | P1 | Create form with trip dates, destination, dynamic line items |
-| claim-detail | P1 | Detail view with receipts, history, role-appropriate actions |
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| (all) | not started | — |

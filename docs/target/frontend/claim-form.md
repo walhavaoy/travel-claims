@@ -3,39 +3,37 @@ component: claim-form
 area: frontend
 priority: P1
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
 # Claim Form
 
-> Create and edit claims with trip details and dynamic line items.
+> Create and edit claims at /claims/new and /claims/:id/edit.
 
 ## Purpose
 
-Form UI for employees to create new travel claims with trip dates, destination, purpose, and one or more line items with amounts.
+Form for employees to create new claims with trip details and dynamic line items.
 
 ## Requirements
 
 ### Core
-- REQ-CF-01: Form fields: trip_start_date, trip_end_date, destination, purpose [priority: must]
-- REQ-CF-02: Dynamic line items: add/remove rows with description, amount, currency [priority: must]
-- REQ-CF-03: Validate trip_end_date >= trip_start_date before submit [priority: must]
-- REQ-CF-04: At least one line item required [priority: must]
-- REQ-CF-05: Submit creates draft via POST /api/claims [priority: must]
-- REQ-CF-06: Navigate to claim detail on successful creation [priority: must]
-- REQ-CF-07: Display validation errors inline [priority: must]
-- REQ-CF-08: data-testid attributes on all form elements with travelclaims- prefix [priority: must]
+- REQ-FF-01: Trip start date and end date (DATE inputs) [priority: must]
+- REQ-FF-02: Destination and purpose text fields [priority: must]
+- REQ-FF-03: Dynamic line items: add/remove rows with description and amount [priority: must]
+- REQ-FF-04: Client-side validation: end_date >= start_date, at least one line item, amount > 0 [priority: must]
+- REQ-FF-05: Submit creates draft via POST /api/claims [priority: must]
+- REQ-FF-06: data-testid="travelclaims-button-submit" on submit button [priority: must]
 
 ### Extended
-- REQ-CF-10: Pre-populate currency from user preference or default USD [priority: should]
+- REQ-FF-10: Auto-save draft on field change (debounced) [priority: could]
 
 ## Acceptance Criteria
 
-- User can add 2 line items and submit, sees new claim in detail view
-- Validation error shown if end date before start date
-- Validation error shown if no line items
+- Create claim with 2 line items, verify in dashboard
+- Validation prevents submit with end_date < start_date
+- Form clears after successful creation
 
 ## Dependencies
 
-- backend/claims-api (POST /api/claims)
-- frontend/shell (router, navigation)
+- REQ-CL-03 (POST /api/claims)
+- REQ-CL-04 (PATCH /api/claims/:id for edits)

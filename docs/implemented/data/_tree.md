@@ -1,17 +1,15 @@
 ---
-area: data
-status: implemented
 coverage: 0%
-created: 2026-04-30
+status: not-started
+created: 2026-05-04
 ---
 
-# Data Area
+# _tree — Implementation Status
 
-> PostgreSQL schema, migrations, and seed data for travel-claims.
+> No implementation yet.
 
-## Components
+## Requirements Status
 
-| Component | Priority | Description |
-|-----------|----------|-------------|
-| schema | P0 | Table definitions, indexes, constraints |
-| migrations | P0 | Startup migration runner against DATABASE_URL |
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| (all) | not started | — |

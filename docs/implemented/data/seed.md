@@ -4,7 +4,7 @@ status: not-started
 created: 2026-05-04
 ---
 
-# migrations — Implementation Status
+# seed — Implementation Status
 
 > No implementation yet.
 

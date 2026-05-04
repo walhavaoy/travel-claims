@@ -3,40 +3,40 @@ component: receipts-api
 area: backend
 priority: P0
 status: planned
-created: 2026-04-29
+created: 2026-05-04
 ---
 
 # Receipts API
 
-> File upload and download endpoints for receipt attachments.
+> Multipart file upload and download for claim receipts.
 
 ## Purpose
 
-Handle multipart file uploads for receipts attached to line items, store files on the PVC at /data/receipts, and serve them back with correct content-type headers.
+Allow employees to attach receipt images/PDFs to line items and download them for review.
 
 ## Requirements
 
 ### Core
-- REQ-RC-01: POST /api/claims/:id/receipts - multipart upload, requires line_item_id in body or query [priority: must]
-- REQ-RC-02: GET /api/claims/:id/receipts - list receipts for a claim [priority: must]
-- REQ-RC-03: GET /api/claims/:id/receipts/:receiptId - download receipt file with correct content-type [priority: must]
-- REQ-RC-04: Multer file size limit: 5MB [priority: must]
-- REQ-RC-05: Allowed MIME types: image/jpeg, image/png, application/pdf only [priority: must]
-- REQ-RC-06: Store files on disk at /data/receipts/{claimId}/{lineItemId}/{uuid}.{ext} [priority: must]
-- REQ-RC-07: Store metadata (filename, content_type, size, path) in receipts table [priority: must]
+- REQ-RC-01: POST /api/claims/:id/receipts — multipart upload, requires line_item_id field [priority: must]
+- REQ-RC-02: Maximum file size 5 MB [priority: must]
+- REQ-RC-03: Allowed content types: image/jpeg, image/png, application/pdf [priority: must]
+- REQ-RC-04: Store files on PVC at /data/receipts/{claim_id}/{receipt_id}.{ext} [priority: must]
+- REQ-RC-05: GET /api/claims/:id/receipts — list receipts for a claim [priority: must]
+- REQ-RC-06: GET /api/claims/:id/receipts/:receiptId — download file with correct Content-Type [priority: must]
+- REQ-RC-07: Only claim submitter can upload receipts (and only while claim is draft) [priority: must]
 
 ### Extended
-- REQ-RC-10: DELETE receipt (only on draft claims by submitter) [priority: should]
+- REQ-RC-10: DELETE /api/claims/:id/receipts/:receiptId — remove receipt (draft claims only) [priority: should]
 
 ## Acceptance Criteria
 
-- Upload a JPEG receipt for a line item, verify it's stored and retrievable
-- Upload a file >5MB, verify 413/400 rejection
-- Upload a .exe file, verify MIME type rejection
-- Download a receipt and verify Content-Type header matches stored content_type
+- Upload JPEG receipt, download returns image/jpeg content type
+- Upload > 5 MB file returns 413
+- Upload .exe file returns 400 (unsupported content type)
+- Receipt download works for all roles who can view the claim
 
 ## Dependencies
 
-- backend/claims-api (claim and line_item must exist)
-- multer npm package
-- PVC mounted at /data/receipts
+- REQ-CL-02 (claim exists and is accessible)
+- Multer middleware
+- /data/receipts PVC mount

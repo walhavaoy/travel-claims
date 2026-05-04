@@ -1,37 +1,36 @@
 ---
 project: travel-claims
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
-# Travel Claims - Target Architecture
+# Travel Claims — Target Architecture Tree
 
-> Standalone travel expense claims web application at claims.tmpclaw.io.
+> Standalone travel expense claim & receipt management system deployed at claims.tmpclaw.io.
 
-## Area Index
+## Areas
 
-| Area | Description | Components | Priority |
-|------|-------------|------------|----------|
-| data | Database schema, migrations, seed data | schema, migrations | P0 |
-| backend | Express server, API routes, middleware | server, auth, claims-api, receipts, export, status-machine | P0 |
-| frontend | Vanilla JS UI served from /public | shell, dashboard, claim-form, claim-detail | P1 |
-| infrastructure | Docker, Helm, deployment config | docker, helm | P0 |
+| Area | Description | Priority |
+|------|-------------|----------|
+| data | Database schema, migrations, seed data | P0 |
+| backend | Express REST API, auth, file uploads | P0 |
+| frontend | Vanilla JS UI served from /public | P1 |
+| infrastructure | Dockerfile, Helm chart, CI | P1 |
 
 ## Priority Matrix
 
-### P0 - Critical (must ship)
-- data/schema - PostgreSQL tables and indexes
-- data/migrations - Schema migration runner
-- backend/server - Express app setup and config
-- backend/auth - Forward-auth middleware
-- backend/claims-api - Claims CRUD + status transitions
-- backend/receipts - Receipt upload/download via Multer
-- backend/export - CSV export for finance role
-- infrastructure/docker - Multi-stage Dockerfile
-- infrastructure/helm - Helm chart (Deployment + Service)
-
-### P1 - High (must ship, depends on P0)
-- frontend/shell - HTML shell, routing, styles
-- frontend/dashboard - Role-based dashboard view
-- frontend/claim-form - Create claim with line items
-- frontend/claim-detail - Detail view with actions
+| Component | Area | Priority | Complexity |
+|-----------|------|----------|------------|
+| schema | data | P0 | standard |
+| migrations | data | P0 | standard |
+| seed | data | P0 | trivial |
+| server | backend | P0 | standard |
+| auth | backend | P0 | standard |
+| claims-api | backend | P0 | complex |
+| receipts-api | backend | P0 | standard |
+| export | backend | P1 | standard |
+| dashboard | frontend | P1 | standard |
+| claim-form | frontend | P1 | standard |
+| claim-detail | frontend | P1 | complex |
+| dockerfile | infrastructure | P1 | trivial |
+| helm-chart | infrastructure | P1 | standard |

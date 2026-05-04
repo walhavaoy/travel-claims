@@ -3,41 +3,38 @@ component: server
 area: backend
 priority: P0
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
 # Server
 
-> Express application bootstrap, configuration, and static file serving.
+> Express application bootstrap, middleware, health, and shutdown.
 
 ## Purpose
 
-Single entry point that configures Express, runs migrations, mounts API routes, serves static files from /public, and handles SPA fallback routing.
+Single entry point that initializes the database, runs migrations, mounts middleware, and starts listening on PORT.
 
 ## Requirements
 
 ### Core
-- REQ-SV-01: Express server listening on PORT env var (default 3000) [priority: must]
-- REQ-SV-02: Run database migrations before accepting connections [priority: must]
-- REQ-SV-03: GET /healthz returns JSON { status: "ok" } [priority: must]
-- REQ-SV-04: Serve static files from public/ directory [priority: must]
-- REQ-SV-05: SPA fallback: non-API, non-static requests serve public/index.html [priority: must]
-- REQ-SV-06: Use pino for all logging (never console.log) [priority: must]
-- REQ-SV-07: Graceful shutdown on SIGTERM/SIGINT [priority: must]
-- REQ-SV-08: Config from environment: PORT, DATABASE_URL, TRUST_FORWARD_AUTH, UPLOAD_DIR [priority: must]
-- REQ-SV-09: JSON body parsing with reasonable size limit [priority: must]
+- REQ-BE-01: Express app listening on PORT env var (default 3000) [priority: must]
+- REQ-BE-02: Run migrations before accepting connections [priority: must]
+- REQ-BE-03: GET /healthz returns {status: "ok"} [priority: must]
+- REQ-BE-04: Graceful shutdown on SIGTERM/SIGINT [priority: must]
+- REQ-BE-05: pino request logging middleware [priority: must]
+- REQ-BE-06: Serve static files from /public directory [priority: must]
+- REQ-BE-07: SPA fallback: non-API routes return index.html [priority: must]
 
 ### Extended
-- REQ-SV-10: Request logging middleware with pino-http [priority: should]
+- REQ-BE-10: Readiness probe at /readyz (checks DB connectivity) [priority: should]
 
 ## Acceptance Criteria
 
-- Server starts and responds to /healthz
+- App starts and responds to /healthz within 5s
 - Static files served with correct content types
-- Non-existent paths return index.html (SPA routing)
-- Server shuts down cleanly on SIGTERM
+- SPA routes (e.g. /claims/new) return index.html
 
 ## Dependencies
 
-- data/migrations (run before listen)
-- backend/auth, backend/claims-api, backend/receipts, backend/export (mounted routes)
+- REQ-DM-01 (migrations)
+- DATABASE_URL, PORT env vars

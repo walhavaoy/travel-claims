@@ -3,37 +3,38 @@ component: auth
 area: backend
 priority: P0
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
-# Authentication Middleware
+# Authentication & Authorization
 
-> Keycloak forward-auth via X-Forwarded-User header.
+> Forward-auth via X-Forwarded-User header with role-based access control.
 
 ## Purpose
 
-Extract the authenticated user identity from the X-Forwarded-User header (set by the Keycloak forward-auth proxy), look up the user in the database, and attach the user object to the request context. All /api/* routes require authentication.
+Identify the current user from the platform's Keycloak forward-auth proxy and enforce role-based permissions on API routes.
 
 ## Requirements
 
 ### Core
-- REQ-AU-01: Read X-Forwarded-User header value (case-insensitive username) [priority: must]
-- REQ-AU-02: Look up user by name in the users table [priority: must]
+- REQ-AU-01: Extract username from X-Forwarded-User header [priority: must]
+- REQ-AU-02: Look up user record in DB by name (case-insensitive) [priority: must]
 - REQ-AU-03: Return 401 if header missing or user not found [priority: must]
-- REQ-AU-04: Attach full user object (id, name, role, department, manager_id) to request [priority: must]
-- REQ-AU-05: Only apply to /api/* routes (not healthz, not static files) [priority: must]
-- REQ-AU-06: When TRUST_FORWARD_AUTH=true, trust the header without further validation [priority: must]
+- REQ-AU-04: Attach user object to request for downstream handlers [priority: must]
+- REQ-AU-05: TRUST_FORWARD_AUTH=true enables header trust (default true) [priority: must]
+- REQ-AU-06: Role guard middleware: requireRole('manager'), requireRole('finance') [priority: must]
 
 ### Extended
-- REQ-AU-10: Cache user lookup to avoid per-request DB query (in-memory, short TTL) [priority: could]
+- REQ-AU-10: Cache user lookups in memory (TTL 60s) to reduce DB queries [priority: could]
 
 ## Acceptance Criteria
 
-- Request with X-Forwarded-User: alice resolves to Alice's user record
-- Request without header gets 401
-- Request with unknown user gets 401
-- User object available in route handlers
+- Request without X-Forwarded-User returns 401
+- Request with unknown user returns 401
+- Alice can access employee routes, cannot access finance routes
+- Bob can access manager routes
+- Carol can access finance routes
 
 ## Dependencies
 
-- data/schema (users table must exist)
+- REQ-DS-01 through REQ-DS-03 (seed users exist)

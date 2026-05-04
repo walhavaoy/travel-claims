@@ -3,45 +3,44 @@ component: claims-api
 area: backend
 priority: P0
 status: planned
-created: 2026-04-30
+created: 2026-05-04
 ---
 
 # Claims API
 
-> REST endpoints for claim CRUD and role-filtered listing.
+> REST endpoints for claim CRUD and status transitions.
 
 ## Purpose
 
-Implement the core claims REST API supporting create, read, update, delete, and status transitions with role-based access control.
+Core business logic: creating claims with line items, editing drafts, submitting for approval, and processing approvals/rejections/payments.
 
 ## Requirements
 
 ### Core
-- REQ-CL-01: GET /api/claims — role-filtered list: employee sees own claims, manager sees direct reports' claims, finance sees approved+paid claims [priority: must]
-- REQ-CL-02: GET /api/claims/:id — single claim with line_items and history included [priority: must]
-- REQ-CL-03: POST /api/claims — create draft claim with line items in a single transaction [priority: must]
-- REQ-CL-04: PATCH /api/claims/:id — edit draft fields, or trigger status transitions (submit/approve/reject/mark-paid) [priority: must]
-- REQ-CL-05: DELETE /api/claims/:id — delete drafts only, return 403 for non-draft claims [priority: must]
-- REQ-CL-06: Status transitions use SELECT ... FOR UPDATE to prevent TOCTOU races [priority: must]
-- REQ-CL-07: Valid transitions: draft→submitted (by submitter), submitted→approved (by manager), submitted→rejected (by manager), approved→paid (by finance) [priority: must]
-- REQ-CL-08: Manager can only act on claims where submitter.manager_id == manager.id (direct reports only) [priority: must]
-- REQ-CL-09: Each status transition creates a claim_history record with actor, from/to status, and optional comment [priority: must]
+- REQ-CL-01: GET /api/claims — role-filtered list (employee=own, manager=direct reports, finance=all approved/paid) [priority: must]
+- REQ-CL-02: GET /api/claims/:id — full claim detail with line items [priority: must]
+- REQ-CL-03: POST /api/claims — create draft claim with line items in a transaction [priority: must]
+- REQ-CL-04: PATCH /api/claims/:id — edit draft fields (destination, purpose, dates, line items) [priority: must]
+- REQ-CL-05: PATCH /api/claims/:id with status transitions: draft->submitted, submitted->approved, submitted->rejected, approved->paid [priority: must]
+- REQ-CL-06: DELETE /api/claims/:id — only drafts, only by submitter [priority: must]
+- REQ-CL-07: Status transitions use SELECT ... FOR UPDATE to prevent TOCTOU races [priority: must]
+- REQ-CL-08: Record every transition in claim_history with actor and comment [priority: must]
+- REQ-CL-09: Manager can only approve/reject claims from direct reports (submitter.manager_id == actor.id) [priority: must]
 - REQ-CL-10: Validate trip_end_date >= trip_start_date on create/edit [priority: must]
-- REQ-CL-11: total_amount computed as SUM of line_items.amount (not stored, or computed+stored) [priority: must]
 
 ### Extended
-- REQ-CL-20: Pagination support for GET /api/claims [priority: could]
+- REQ-CL-20: Pagination on list endpoint (limit/offset) [priority: should]
+- REQ-CL-21: Filter by status query parameter [priority: should]
 
 ## Acceptance Criteria
 
-- Alice can create a draft claim with 2 line items, then submit it
-- Bob can list Alice's claims, approve one, reject another with comment
-- Carol cannot see draft/submitted claims, only approved/paid
-- Deleting a submitted claim returns 403
-- Concurrent approval attempts do not create inconsistent state
+- Alice creates draft, edits it, submits it
+- Bob sees Alice's claim (direct report), approves with comment
+- Carol sees approved claim, marks as paid
+- Concurrent approve attempts: one succeeds, other gets 409
+- Invalid transition (e.g., draft->paid) returns 400
 
 ## Dependencies
 
-- backend/auth (user context on request)
-- backend/status-machine (transition validation)
-- data/schema (all tables)
+- REQ-AU-01 through REQ-AU-06 (auth middleware)
+- REQ-DA-02, REQ-DA-03, REQ-DA-05 (claims, line_items, claim_history tables)

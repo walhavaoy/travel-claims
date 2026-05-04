@@ -1,18 +1,15 @@
 ---
-component: shell
-area: frontend
-priority: P0
-status: not-started
 coverage: 0%
-created: 2026-04-30
+status: not-started
+created: 2026-05-04
 ---
 
-# shell (Implementation Status)
+# shell — Implementation Status
 
-> No requirements implemented yet.
+> No implementation yet.
 
-## Requirement Status
+## Requirements Status
 
-| Requirement | Status |
-|-------------|--------|
-| (none) | - |
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| (all) | not started | — |

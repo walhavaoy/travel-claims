@@ -1,17 +1,15 @@
 ---
-area: infrastructure
-status: implemented
 coverage: 0%
-created: 2026-04-30
+status: not-started
+created: 2026-05-04
 ---
 
-# Infrastructure Area
+# _tree — Implementation Status
 
-> Container build and Kubernetes deployment for travel-claims.
+> No implementation yet.
 
-## Components
+## Requirements Status
 
-| Component | Priority | Description |
-|-----------|----------|-------------|
-| docker | P0 | Multi-stage Dockerfile, node:22-slim, UID 1001 |
-| helm | P0 | Helm chart: Deployment + Service named "product" on port 3000 |
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| (all) | not started | — |
